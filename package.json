@@ -1,6 +1,6 @@
 {
   "name": "@poutanen/redate",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A CLI tool for renaming images based on EXIF data.",
   "type": "module",
   "main": "src/redate.js",

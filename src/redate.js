@@ -10,9 +10,12 @@ const program = new Command();
 program
     .name("redate")
     .description("Rename images based on EXIF dates")
-    .version("0.1.0")
-    .argument("<paths...>", "File(s) or folder(s) to process")
+    .version("0.1.1")
+    .argument("[paths...]", "File(s) or folder(s) to process")
     .action((paths) => {
+        if (!paths || paths.length === 0) {
+            program.help({ error: true });
+        }
         for (const p of paths) {
             if (!fs.existsSync(p)) {
                 console.error(`Path does not exist: ${p}`);
