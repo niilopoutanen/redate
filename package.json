@@ -8,7 +8,7 @@
   "type": "module",
   "scripts": {
     "electron": "concurrently \"vite dev\" \"wait-on tcp:5173 && tsc && node cleaner.cjs && electron .\" --kill-others",
-    "package": "vite build && tsc"
+    "package": "vite build && tsc && node cleaner.cjs && node packager.js"
   },
   "devDependencies": {
     "@electron/packager": "^18.3.4",
