@@ -1,3 +1,7 @@
+<script>
+    import BottomControls from "$lib/components/BottomControls.svelte";
+
+</script>
 <div class="dropwindow">
     <div class="header">
         <div class="handle" />
@@ -7,6 +11,7 @@
         <slot />
     </div>
 
+    <BottomControls/>
 </div>
 
 
@@ -43,7 +48,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0px 10px 0px 10px;
+            padding: 0px 15px 0px 15px;
         }
     }
 

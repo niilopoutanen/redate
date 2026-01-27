@@ -1,5 +1,6 @@
 import { BrowserWindow, app, ipcMain, dialog, nativeTheme } from 'electron';
 import path from 'path';
+import liquidGlass from "electron-liquid-glass";
 
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -29,19 +30,22 @@ function createDropWindow() {
         resizable: false,
         autoHideMenuBar: true,
         frame: false,
-        backgroundMaterial: "mica",
-        vibrancy: "under-window",
+        transparent: true,
         webPreferences: {
             nodeIntegration: true,
             preload: getPreloadPath()
         },
     })
 
+    const options = {
+        tintColor: "#44000010",
+        cornerRadius: 25
+    };
 
-
+    liquidGlass.addView(dropWindow.getNativeWindowHandle(), options);
     if (dev) {
         dropWindow.loadURL("http://localhost:5173/drop");
-        dropWindow.webContents.openDevTools({mode: "detach"});
+        dropWindow.webContents.openDevTools({ mode: "detach" });
     }
     else {
         dropWindow.loadFile("build/drop.html");
