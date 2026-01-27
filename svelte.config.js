@@ -6,13 +6,7 @@ const config = {
 	preprocess: vitePreprocess(),
 
 	kit: {
-		adapter: adapter(),
-		files: {
-			lib: 'electron/lib',
-			routes: 'electron/routes',
-			assets: 'electron/static',
-			appTemplate: 'electron/app.html',
-		}
+		adapter: adapter()
 	}
 };
 

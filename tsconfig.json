@@ -14,8 +14,7 @@
 		"noEmit": false,
 	},
 	"include": [
-		"electron/electron.ts",
-		"electron/preload.ts",
-		"server/*.ts",
+		"src/electron.ts",
+		"src/preload.ts",
 	]
 }
