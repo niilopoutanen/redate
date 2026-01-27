@@ -1,0 +1,32 @@
+{
+  "name": "redate",
+  "version": "0.0.1",
+  "author": "Niilo Poutanen",
+  "description": "App for renaming files by exif data",
+  "private": true,
+  "main": "build/electron.js",
+  "type": "module",
+  "scripts": {
+    "electron": "concurrently \"vite dev\" \"wait-on tcp:5173 && tsc && node cleaner.cjs && electron .\" --kill-others",
+    "package": "vite build && tsc"
+  },
+  "devDependencies": {
+    "@electron/packager": "^18.3.4",
+    "@sveltejs/kit": "^2.0.0",
+    "@sveltejs/vite-plugin-svelte": "^3.0.0",
+    "concurrently": "^8.2.2",
+    "electron": "^32.0.1",
+    "kill-port": "^2.0.1",
+    "sass-embedded": "^1.77.8",
+    "svelte": "^4.2.7",
+    "svelte-check": "^3.6.0",
+    "typescript": "^5.0.0",
+    "vite": "^5.4.3",
+    "wait-on": "^8.0.0"
+  },
+  "dependencies": {
+    "@sveltejs/adapter-static": "^3.0.4",
+    "electron-packager": "^17.1.2",
+    "ts-node": "^10.9.2"
+  }
+}
