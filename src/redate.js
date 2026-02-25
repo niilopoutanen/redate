@@ -3,6 +3,7 @@ import { Command } from "commander";
 import fs from "fs";
 import path from "path";
 import exifr from 'exifr';
+import { getConfig, setConfig, TOKENS } from "./config.js";
 
 
 const program = new Command();
@@ -10,12 +11,12 @@ const program = new Command();
 program
     .name("redate")
     .description("Rename images based on EXIF dates")
-    .version("0.1.1")
-    .argument("[paths...]", "File(s) or folder(s) to process")
-    .action((paths) => {
-        if (!paths || paths.length === 0) {
-            program.help({ error: true });
-        }
+    .version("0.1.1");
+
+program
+    .command("process <paths...>")
+    .description("Process file(s) or folder(s)")
+    .action(async (paths) => {
         for (const p of paths) {
             if (!fs.existsSync(p)) {
                 console.error(`Path does not exist: ${p}`);
@@ -23,81 +24,135 @@ program
             }
 
             const stats = fs.statSync(p);
+
             if (stats.isFile()) {
-                processFile(p);
+                await processFile(p);
             } else if (stats.isDirectory()) {
-                processFiles(p);
+                await processFiles(p);
             } else {
                 console.error(`Unsupported path type: ${p}`);
             }
         }
+    });
+const DEFAULT_FORMAT = "yyyy-mm-dd hh-min-ss";
+
+const formatCommand = program
+    .command("format")
+    .description("Manage date format");
+
+formatCommand
+    .command("set <format>")
+    .description("Set global date format")
+    .action((format) => {
+        setConfig({ format });
+        console.log(`Format set to: ${format}`);
+    });
+
+formatCommand
+    .command("get")
+    .description("Show current global date format")
+    .action(() => {
+        const config = getConfig();
+        console.log(`Current format: ${config.format}`);
+    });
+
+formatCommand
+    .command("reset")
+    .description("Reset format to default")
+    .action(() => {
+        setConfig({ format: DEFAULT_FORMAT });
+        console.log(`Format reset to default: ${DEFAULT_FORMAT}`);
     });
 
 program.parse(process.argv);
 
 
 
-function processFiles(folderPath) {
+
+async function processFiles(folderPath) {
     const files = fs.readdirSync(folderPath);
+
     for (const file of files) {
         const filePath = path.join(folderPath, file);
-        if (fs.statSync(filePath).isFile()) {
-            getDateFromFile(filePath).then((date) => {
-                if (date) {
-                    const newFileName = formatFileName(date, file);
-                    fs.renameSync(filePath, path.join(folderPath, newFileName));
-                    console.log(`Renamed to: ${newFileName}`);
-                }
-            }).catch((err) => {
-                console.error(`Error reading EXIF data from ${filePath}: ${err}`);
-            });
+
+        if (!fs.statSync(filePath).isFile()) continue;
+
+        try {
+            const date = await getDateFromFile(filePath);
+
+            if (!date) {
+                console.log(`No EXIF date found for file: ${filePath}`);
+                continue;
+            }
+
+            const newFileName = formatFileName(date, file);
+            fs.renameSync(filePath, path.join(folderPath, newFileName));
+            console.log(`Renamed to: ${newFileName}`);
+
+        } catch (err) {
+            console.log(`Skipped (unsupported or invalid): ${filePath}`);
         }
     }
 }
 
 
 
-function processFile(filePath) {
-    if (fs.existsSync(filePath) && fs.statSync(filePath).isFile()) {
-        console.log(`Processing file: ${filePath}`);
-        getDateFromFile(filePath).then((date) => {
-            if (date) {
-                const dir = path.dirname(filePath);
-                const originalName = path.basename(filePath);
-                const newFileName = formatFileName(date, originalName);
-                fs.renameSync(filePath, path.join(dir, newFileName));
-                console.log(`Renamed to: ${newFileName}`);
-            } else {
-                console.log(`No EXIF date found for file: ${filePath}`);
-            }
-        }).catch((err) => {
-            console.error(`Error reading EXIF data from ${filePath}: ${err}`);
-        });
-    }
-    else {
+async function processFile(filePath) {
+    if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
         console.error(`File does not exist: ${filePath}`);
+        return;
+    }
+
+    console.log(`Processing file: ${filePath}`);
+
+    try {
+        const date = await getDateFromFile(filePath);
+
+        if (!date) {
+            console.log(`No EXIF date found for file: ${filePath}`);
+            return;
+        }
+
+        const dir = path.dirname(filePath);
+        const originalName = path.basename(filePath);
+        const newFileName = formatFileName(date, originalName);
+
+        fs.renameSync(filePath, path.join(dir, newFileName));
+        console.log(`Renamed to: ${newFileName}`);
+    } catch (err) {
+        console.error(`Error reading EXIF data from ${filePath}: ${err}`);
     }
 }
 
 
-function formatFileName(date, originalName) {
-    const yyyy = date.getFullYear();
-    const mm = String(date.getMonth() + 1).padStart(2, '0');
-    const dd = String(date.getDate()).padStart(2, '0');
-    const hh = String(date.getHours()).padStart(2, '0');
-    const min = String(date.getMinutes()).padStart(2, '0');
-    const ss = String(date.getSeconds()).padStart(2, '0');
+
+export function formatFileName(date, originalName) {
+    const config = getConfig();
+    let formatted = config.format;
+
+    for (const key in TOKENS) {
+        if (formatted.includes(key)) {
+            formatted = formatted.replaceAll(key, TOKENS[key].value(date));
+        }
+    }
+
     const ext = path.extname(originalName);
-
-    return `${yyyy}-${mm}-${dd} ${hh}-${min}-${ss}${ext}`;
+    return `${formatted}${ext}`;
 }
-
-
 async function getDateFromFile(filePath) {
     const exif = await exifr.parse(filePath, { reviveValues: true });
-    if (!exif?.DateTimeOriginal) return null;
 
-    const date = exif.DateTimeOriginal;
+
+    const date =
+        exif?.DateTimeOriginal ||
+        exif?.CreateDate ||
+        exif?.ModifyDate;
+
+    if (!date) {
+        console.error(`No EXIF date found for file: ${filePath}`);
+        return null;
+    };
+
     const offset = exif.OffsetTimeOriginal;
 
     if (!offset) return date;
