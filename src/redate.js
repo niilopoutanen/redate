@@ -3,7 +3,7 @@ import { Command } from "commander";
 import fs from "fs";
 import path from "path";
 import exifr from 'exifr';
-import { getConfig, setConfig, TOKENS } from "./config.js";
+import { getConfig, setConfig, TOKENS, DEFAULT_CONFIG } from "./config.js";
 
 
 const program = new Command();
@@ -11,7 +11,7 @@ const program = new Command();
 program
     .name("redate")
     .description("Rename images based on EXIF dates")
-    .version("0.2.0");
+    .version("0.2.1");
 
 program
     .command("process <paths...>")
@@ -34,106 +34,109 @@ program
             }
         }
     });
-const DEFAULT_FORMAT = "yyyy-mm-dd hh-min-ss";
 
-const formatCommand = program
-    .command("format")
-    .description("Manage date format");
+const configCommand = program
+    .command("config")
+    .description("Manage configuration");
 
-formatCommand
-    .command("set <format>")
-    .description("Set global date format")
-    .action((format) => {
-        setConfig({ format });
-        console.log(`Format set to: ${format}`);
-    });
-
-formatCommand
-    .command("get")
-    .description("Show current global date format")
-    .action(() => {
+configCommand
+    .command("get [key]")
+    .action((key) => {
         const config = getConfig();
-        console.log(`Current format: ${config.format}`);
+        if (!key) {
+            console.log(config);
+            return;
+        }
+
+        console.log(config[key]);
     });
 
-formatCommand
+configCommand
+    .command("set <key> <value>")
+    .action((key, value) => {
+        setConfig({ [key]: value });
+        console.log(`${key} updated to ${value}`);
+    });
+
+configCommand
     .command("reset")
-    .description("Reset format to default")
     .action(() => {
-        setConfig({ format: DEFAULT_FORMAT });
-        console.log(`Format reset to default: ${DEFAULT_FORMAT}`);
+        setConfig(DEFAULT_CONFIG);
+        console.log("Config reset to defaults");
     });
-
 program.parse(process.argv);
 
 
+const fileHandlers = {
+    rename: (src, dest) => {
+        fs.renameSync(src, dest);
+    },
+
+    copy: (src, dest) => {
+        fs.copyFileSync(src, dest);
+    },
+
+    copy_in_folder: (src, dest) => {
+        const dir = path.dirname(src);
+        const targetDir = path.join(dir, "redate");
+        if (!fs.existsSync(targetDir)) {
+            fs.mkdirSync(targetDir);
+        }
+        fs.copyFileSync(src, path.join(targetDir, path.basename(dest)));
+    }
+};
 
 
 async function processFiles(folderPath) {
     const files = fs.readdirSync(folderPath);
-
+    const config = getConfig();
     for (const file of files) {
         const filePath = path.join(folderPath, file);
 
         if (!fs.statSync(filePath).isFile()) continue;
 
-        try {
-            const date = await getDateFromFile(filePath);
-
-            if (!date) {
-                console.log(`No EXIF date found for file: ${filePath}`);
-                continue;
-            }
-
-            const newFileName = formatFileName(date, file);
-            fs.renameSync(filePath, path.join(folderPath, newFileName));
-            console.log(`Renamed to: ${newFileName}`);
-
-        } catch (err) {
-            console.log(`Skipped (unsupported or invalid): ${filePath}`);
-        }
+        processFile(filePath, config);
     }
 }
 
 
 
-async function processFile(filePath) {
-    if (!fs.existsSync(filePath) || !fs.statSync(filePath).isFile()) {
-        console.error(`File does not exist: ${filePath}`);
-        return;
+async function processFile(filePath, config) {
+    if (!config || config == null) {
+        config = getConfig();
     }
 
-    console.log(`Processing file: ${filePath}`);
+    const date = await getDateFromFile(filePath);
+    if (!date) return;
 
-    try {
-        const date = await getDateFromFile(filePath);
+    const originalName = path.basename(filePath);
+    const newFileName = formatFileName(date, originalName, config);
 
-        if (!date) {
-            console.log(`No EXIF date found for file: ${filePath}`);
-            return;
-        }
+    applyFileHandling(filePath, newFileName, config);
 
-        const dir = path.dirname(filePath);
-        const originalName = path.basename(filePath);
-        const newFileName = formatFileName(date, originalName);
+    console.log(`Processed: ${newFileName}`);
+}
+function applyFileHandling(srcPath, newFileName, config) {
+    const dir = path.dirname(srcPath);
+    const dest = path.join(dir, newFileName);
 
-        fs.renameSync(filePath, path.join(dir, newFileName));
-        console.log(`Renamed to: ${newFileName}`);
-    } catch (err) {
-        console.error(`Error reading EXIF data from ${filePath}: ${err}`);
+    const handler = fileHandlers[config.fileHandling];
+
+    if (!handler) {
+        throw new Error(`Unknown fileHandling: ${config.fileHandling}`);
     }
+
+    handler(srcPath, dest);
 }
 
 
-
-export function formatFileName(date, originalName) {
-    const config = getConfig();
+export function formatFileName(date, originalName, config) {
     let formatted = config.format;
 
-    for (const key in TOKENS) {
-        if (formatted.includes(key)) {
-            formatted = formatted.replaceAll(key, TOKENS[key].value(date));
-        }
+    const sortedTokens = Object.keys(TOKENS).sort((a, b) => b.length - a.length);
+
+    for (const key of sortedTokens) {
+        formatted = formatted.replaceAll(key, TOKENS[key].value(date));
     }
 
     const ext = path.extname(originalName);

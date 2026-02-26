@@ -1,11 +1,14 @@
 {
   "name": "redate-cli",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A CLI tool for renaming images based on EXIF data.",
   "type": "module",
   "main": "src/redate.js",
   "bin": {
     "redate": "./src/redate.js"
+  },
+  "scripts": {
+    "redate": "node ./src/redate.js"
   },
   "repository": {
     "type": "git",
