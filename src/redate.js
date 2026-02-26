@@ -14,7 +14,7 @@ const program = new Command();
 program
     .name("redate")
     .description("Rename images based on EXIF dates")
-    .version("0.2.2");
+    .version("0.2.3");
 
 program
     .command("process <paths...>")
@@ -99,7 +99,7 @@ program
             }
 
             console.log("Updating...");
-            execSync("npm install -g redate", { stdio: "inherit" });
+            execSync("npm install -g redate-cli", { stdio: "inherit" });
 
             console.log("Update completed.");
         } catch (err) {
