@@ -3,9 +3,13 @@
   "version": "0.2.3",
   "description": "A CLI tool for renaming images based on EXIF data.",
   "type": "module",
-  "main": "src/redate.js",
+  "main": "./src/core.js",
   "bin": {
     "redate": "./src/redate.js"
+  },
+  "exports": {
+    ".": "./src/core.js",
+    "./config": "./src/config.js"
   },
   "scripts": {
     "redate": "node ./src/redate.js"
