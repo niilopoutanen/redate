@@ -28,7 +28,7 @@
   "dependencies": {
     "@sveltejs/adapter-static": "^3.0.4",
     "electron-packager": "^17.1.2",
-    "redate-cli": "^0.2.3",
+    "redate-cli": "^0.3.0",
     "ts-node": "^10.9.2"
   },
   "optionalDependencies": {

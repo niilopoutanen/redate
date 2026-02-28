@@ -16,6 +16,10 @@ button {
     font-family: "Inter", sans-serif;
 }
 
+.nomargin{
+    margin: 0 !important;
+}
+
 @font-face {
     font-family: "Inter";
     src: url("/fonts/Inter-Regular.ttf") format("truetype");

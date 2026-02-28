@@ -4,7 +4,9 @@ import path from 'path';
 
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import { redate } from 'redate-cli';
+import redate from "redate-cli";
+import { getConfig } from "redate-cli/config";
+
 const dev = !app.isPackaged;
 let dropWindow: BrowserWindow;
 
@@ -57,7 +59,7 @@ function createDropWindow() {
 
 function createSettingsWindow() {
     const settingsWindow = new BrowserWindow({
-        width: 400,
+        width: 700,
         height: 400,
         autoHideMenuBar: true,
         titleBarStyle: "hidden",
@@ -111,8 +113,8 @@ ipcMain.on('browse', (event, title) => {
     });
 })
 
-ipcMain.on('get-config', (event) => {
-
+ipcMain.handle('get-config', () => {
+    return getConfig();
 });
 
 

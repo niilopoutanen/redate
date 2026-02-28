@@ -41,7 +41,7 @@
             flex-direction: column;
             view-transition-name: settings-sidebar;
 
-            .drag{
+            .drag {
                 width: 100%;
                 height: $titlebar-height;
                 -webkit-app-region: drag;
@@ -98,11 +98,26 @@
             .page {
                 flex-grow: 1;
                 display: flex;
+                flex-direction: column;
                 padding: 10px;
 
-                :global(h1){
+                :global(h1) {
                     margin-top: 0;
                 }
+                :global(p.label) {
+                    margin: 0;
+                    color: $text-secondary;
+                    font-size: 14px;
+                    margin-bottom: 5px;
+                    margin-left: 5px;
+                }
+                :global(.container) {
+                    background-color: $layer-0-solid;
+                    padding: 10px;
+                    border-radius: 10px;
+
+                }
+
             }
         }
     }
