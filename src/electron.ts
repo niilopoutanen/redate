@@ -1,6 +1,6 @@
 import { BrowserWindow, app, ipcMain, dialog, nativeTheme } from 'electron';
 import path from 'path';
-import liquidGlass from "electron-liquid-glass";
+//import liquidGlass from "electron-liquid-glass";
 
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -37,12 +37,13 @@ function createDropWindow() {
         },
     })
 
-    const options = {
-        tintColor: "#44000010",
-        cornerRadius: 25
-    };
+    // const options = {
+    //     tintColor: "#44000010",
+    //     cornerRadius: 25
+    // };
 
-    liquidGlass.addView(dropWindow.getNativeWindowHandle(), options);
+    
+    //liquidGlass.addView(dropWindow.getNativeWindowHandle(), options);
     if (dev) {
         dropWindow.loadURL("http://localhost:5173/drop");
         dropWindow.webContents.openDevTools({ mode: "detach" });
@@ -54,6 +55,26 @@ function createDropWindow() {
     dropWindow.show();
 }
 
+function createSettingsWindow() {
+    const settingsWindow = new BrowserWindow({
+        width: 400,
+        height: 400,
+        autoHideMenuBar: true,
+        titleBarStyle: "hidden",
+        webPreferences: {
+            nodeIntegration: true,
+            preload: getPreloadPath()
+        },
+    })
+    if (dev) {
+        settingsWindow.loadURL("http://localhost:5173/settings");
+        settingsWindow.webContents.openDevTools({ mode: "detach" });
+    }
+    else {
+        settingsWindow.loadFile("build/settings.html");
+    }
+    settingsWindow.show();
+}
 
 app.whenReady().then(() => {
     createDropWindow();
@@ -69,9 +90,14 @@ app.on('window-all-closed', () => {
 ipcMain.on('close', (event) => {
     app.quit();
 });
-
+ipcMain.on('minimize', (event) => {
+    const window = BrowserWindow.getFocusedWindow();
+    if (window) {
+        window.minimize();
+    }
+});
 ipcMain.on('settings', (event) => {
-
+    createSettingsWindow();
 });
 
 

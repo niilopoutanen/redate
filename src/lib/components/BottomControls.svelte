@@ -43,7 +43,7 @@
 
 <div class="controls">
     {#if state === STATE_INITIAL}
-        <button>
+        <button on:click={() => window.electron.settings()}>
             <img src={settings} alt="Settings" />
         </button>
     {/if}

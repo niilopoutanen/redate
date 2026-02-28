@@ -2,6 +2,7 @@ const { contextBridge, ipcRenderer, webUtils } = require('electron');
 
 contextBridge.exposeInMainWorld('electron', {
     close: () => ipcRenderer.send('close'),
+    minimize: () => ipcRenderer.send('minimize'),
     settings: () => ipcRenderer.send('settings'),
     browse: () => ipcRenderer.send('browse'),
     go: (path) => ipcRenderer.send('go', path),

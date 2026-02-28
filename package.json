@@ -8,6 +8,7 @@
   "type": "module",
   "scripts": {
     "electron": "concurrently \"vite dev\" \"wait-on tcp:5173 && tsc && node cleaner.cjs && electron .\" --kill-others",
+    "svelte": "vite dev",
     "package": "vite build && tsc && node cleaner.cjs && node packager.js"
   },
   "devDependencies": {
@@ -26,8 +27,11 @@
   },
   "dependencies": {
     "@sveltejs/adapter-static": "^3.0.4",
-    "electron-liquid-glass": "^1.1.1",
     "electron-packager": "^17.1.2",
+    "redate-cli": "^0.2.3",
     "ts-node": "^10.9.2"
+  },
+  "optionalDependencies": {
+    "electron-liquid-glass": "^1.1.1"
   }
 }
