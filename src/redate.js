@@ -11,7 +11,7 @@ const program = new Command();
 program
     .name("redate")
     .description("Rename images based on EXIF dates")
-    .version("0.2.3");
+    .version("0.3.0");
 
 program
     .command("process <paths...>")

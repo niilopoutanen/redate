@@ -1,6 +1,6 @@
 {
   "name": "redate-cli",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "A CLI tool for renaming images based on EXIF data.",
   "type": "module",
   "main": "./src/core.js",
