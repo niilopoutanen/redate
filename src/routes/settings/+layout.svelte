@@ -1,12 +1,12 @@
 <main>
     <section class="sidebar">
         <div class="drag"></div>
-        <div class="item">
+        <a class="item" href="/settings">
             <p>General</p>
-        </div>
-        <div class="item">
+        </a>
+        <a class="item" href="/settings/files">
             <p>File handling</p>
-        </div>
+        </a>
     </section>
     <section class="content">
         <header>
@@ -33,12 +33,13 @@
         flex-grow: 1;
         font-family: "Inter", sans-serif;
         .sidebar {
-            width: 200px;
+            min-width: 200px;
             background-color: $layer-0-solid;
             padding: 10px;
             gap: 10px;
             display: flex;
             flex-direction: column;
+            view-transition-name: settings-sidebar;
 
             .drag{
                 width: 100%;
@@ -52,6 +53,8 @@
                 box-sizing: border-box;
                 border-radius: 10px;
                 font-size: 14px;
+                color: white;
+                text-decoration: none;
                 p {
                     margin: 0;
                 }
@@ -66,6 +69,7 @@
                 width: 100%;
                 background-color: $layer-0-solid;
                 min-height: $titlebar-height;
+                view-transition-name: settings-header;
 
                 .controls-windows {
                     width: 100%;

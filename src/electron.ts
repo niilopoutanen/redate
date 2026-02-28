@@ -4,7 +4,7 @@ import path from 'path';
 
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-
+import { redate } from 'redate-cli';
 const dev = !app.isPackaged;
 let dropWindow: BrowserWindow;
 
@@ -42,7 +42,7 @@ function createDropWindow() {
     //     cornerRadius: 25
     // };
 
-    
+
     //liquidGlass.addView(dropWindow.getNativeWindowHandle(), options);
     if (dev) {
         dropWindow.loadURL("http://localhost:5173/drop");
@@ -111,6 +111,9 @@ ipcMain.on('browse', (event, title) => {
     });
 })
 
+ipcMain.on('get-config', (event) => {
+
+});
 
 
 function getPreloadPath(): string {
