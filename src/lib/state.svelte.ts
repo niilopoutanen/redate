@@ -10,3 +10,8 @@ export const appState = $state({
     processing: false,
     status: "initial",
 });
+
+export const config = $state({
+    fileHandling: null,
+    format: "",
+});

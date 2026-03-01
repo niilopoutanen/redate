@@ -8,7 +8,6 @@ contextBridge.exposeInMainWorld('electron', {
     go: (path) => ipcRenderer.send('go', path),
 
     startProcessing: (files) => {
-        console.log("Renderer sending files:", files); // debug
         ipcRenderer.send('start-processing', files);
     },
     onProcessingComplete: (callback) =>
@@ -20,7 +19,7 @@ contextBridge.exposeInMainWorld('electron', {
 
     getConfig: () => ipcRenderer.invoke('get-config'),
     updateConfig: (newConfig) => ipcRenderer.send('update-config', newConfig),
-
+    updateValue: (key, value) => ipcRenderer.send('update-value', { key, value }),
 
     getErrorCause: () => ipcRenderer.invoke('get-error-cause'),
     closeErrors: () => ipcRenderer.send('close-errors'),

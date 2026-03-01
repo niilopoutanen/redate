@@ -1,6 +1,13 @@
 <script>
-    /** @type {{children?: import('svelte').Snippet}} */
+    import { config } from "$lib/state.svelte.js";
+    import { onMount } from "svelte";
     let { children } = $props();
+
+    onMount(async () => {
+        const loaded = await window.electron.getConfig();
+        config.fileHandling = loaded.fileHandling;
+        config.format = loaded.format;
+    });
 </script>
 
 <main>
@@ -120,9 +127,7 @@
                     background-color: $layer-0-solid;
                     padding: 10px;
                     border-radius: 10px;
-
                 }
-
             }
         }
     }

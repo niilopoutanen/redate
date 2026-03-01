@@ -5,7 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import redate from "redate-cli";
-import { getConfig } from "redate-cli/config";
+import { getConfig, setConfig } from "redate-cli/config";
 
 const dev = !app.isPackaged;
 let dropWindow: BrowserWindow;
@@ -118,12 +118,8 @@ ipcMain.handle('get-config', () => {
 });
 
 ipcMain.on('start-processing', async (event, files) => {
-    console.log("Files received:", files);
     try {
-        console.log("Processing:", files);
-
         await redate(files, getConfig());
-
         event.sender.send('processing-complete', {
             success: true
         });
@@ -134,6 +130,12 @@ ipcMain.on('start-processing', async (event, files) => {
             error: err.message
         });
     }
+});
+
+ipcMain.on('update-value', (event, { key, value }) => {
+    const config = getConfig();
+    config[key] = value;
+    setConfig(config);
 });
 
 
