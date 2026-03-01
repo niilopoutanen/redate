@@ -1,0 +1,12 @@
+export const APP_STATES = {
+    INITIAL: "initial",
+    FILES_READY: "files-ready",
+    PROCESSING: "processing",
+    DONE: "done",
+} as const;
+
+export const appState = $state({
+    files: [],
+    processing: false,
+    status: "initial",
+});

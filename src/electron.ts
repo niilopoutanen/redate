@@ -117,6 +117,25 @@ ipcMain.handle('get-config', () => {
     return getConfig();
 });
 
+ipcMain.on('start-processing', async (event, files) => {
+    console.log("Files received:", files);
+    try {
+        console.log("Processing:", files);
+
+        await redate(files, getConfig());
+
+        event.sender.send('processing-complete', {
+            success: true
+        });
+
+    } catch (err) {
+        event.sender.send('processing-complete', {
+            success: false,
+            error: err.message
+        });
+    }
+});
+
 
 function getPreloadPath(): string {
     const filePath = path.join(dirName() + "/preload.cjs");

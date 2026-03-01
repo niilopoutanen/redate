@@ -1,9 +1,3 @@
-<script context="module" lang="ts">
-    export const STATE_INITIAL = "initial";
-    export const STATE_FILESREADY = "files-ready";
-    export const STATE_PROCESSING = "processing";
-    export const STATE_DONE = "done";
-</script>
 
 <script lang="ts">
     import folder from "$lib/vector/folder.svg";
@@ -11,75 +5,65 @@
     import close from "$lib/vector/close.svg";
     import back from "$lib/vector/back.svg";
 
-    import { onMount } from "svelte";
-    import { goto } from "$app/navigation";
+    import { appState, APP_STATES } from "$lib/state.svelte.js";
 
 
-    let state = STATE_INITIAL;
-    onMount(() => {
-        window.electron.stateUpdate((value) => {
-            console.log("New state: ", value);
-            updateRoute(value);
-        });
-    });
-
-    function updateRoute(value){
-        state = value;
-        if (state === STATE_FILESREADY) {
-                goto("drop/preview");
-            }
-            if (state === STATE_PROCESSING) {
-                goto("/drop/processing");
-            }
-            if (state === STATE_DONE) {
-                goto("/drop/done");
-            }
-            if (state === STATE_INITIAL) {
-                goto("/drop");
-            }
+    function stopProcessing() {
+        if (appState.status === APP_STATES.PROCESSING) {
+            appState.status = APP_STATES.FILES_READY;
+        }
     }
-    function stopProcessing() {}
+
+    function startProcessing(){
+        appState.status = APP_STATES.PROCESSING;
+        const filesToProcess = $state.snapshot(appState.files);
+        console.log("Starting processing for files:", filesToProcess);
+        window.electron.startProcessing(filesToProcess);
+    }
 </script>
 
 <div class="controls">
-    {#if state === STATE_INITIAL}
-        <button on:click={() => window.electron.settings()}>
+    {#if appState.status === APP_STATES.INITIAL}
+        <button onclick={() => window.electron.settings()}>
             <img src={settings} alt="Settings" />
         </button>
     {/if}
 
-    {#if state === STATE_FILESREADY}
-        <button on:click={() => updateRoute(STATE_INITIAL)}>
+    {#if appState.status === APP_STATES.FILES_READY}
+        <button onclick={() => {
+            appState.status = APP_STATES.INITIAL;
+            appState.files = [];
+        }}>
             <img src={back} alt="Go back" />
         </button>
     {/if}
 
-    {#if state === STATE_INITIAL}
+    {#if appState.status === APP_STATES.INITIAL}
         <button>
             <img src={folder} alt="Browse files" />
         </button>
     {/if}
 
-    {#if state === STATE_FILESREADY}
-        <button class="primary" >
+    {#if appState.status === APP_STATES.FILES_READY}
+        <button class="primary" onclick={startProcessing}>
             <p>Start</p>
         </button>
     {/if}
 
-    {#if state === STATE_PROCESSING}
-        <button on:click={stopProcessing}>
+    {#if appState.status === APP_STATES.PROCESSING}
+        <button onclick={stopProcessing}>
             <p>Cancel</p>
         </button>
     {/if}
 
-    {#if state === STATE_DONE}
-        <button class="primary" on:click={() => {updateRoute(STATE_INITIAL);}}>
+    {#if appState.status === APP_STATES.DONE}
+        <button class="primary" onclick={() => {appState.status = APP_STATES.INITIAL;}}>
             <p>Done</p>
         </button>
     {/if}
 
-    {#if state != STATE_PROCESSING && state != STATE_DONE}
-        <button >
+    {#if appState.status != APP_STATES.PROCESSING && appState.status != APP_STATES.DONE}
+        <button onclick={() => window.electron.close()}>
             <img src={close} alt="Close app" />
         </button>
     {/if}

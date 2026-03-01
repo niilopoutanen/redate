@@ -1,3 +1,8 @@
+<script>
+    /** @type {{children?: import('svelte').Snippet}} */
+    let { children } = $props();
+</script>
+
 <main>
     <section class="sidebar">
         <div class="drag"></div>
@@ -11,12 +16,12 @@
     <section class="content">
         <header>
             <div class="controls-windows">
-                <button on:click={() => window.electron.minimize()}> - </button>
-                <button on:click={() => window.electron.close()}> x </button>
+                <button onclick={() => window.electron.minimize()}> - </button>
+                <button onclick={() => window.electron.close()}> x </button>
             </div>
         </header>
         <div class="page">
-            <slot></slot>
+            {@render children?.()}
         </div>
     </section>
 </main>

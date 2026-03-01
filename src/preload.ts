@@ -6,19 +6,21 @@ contextBridge.exposeInMainWorld('electron', {
     settings: () => ipcRenderer.send('settings'),
     browse: () => ipcRenderer.send('browse'),
     go: (path) => ipcRenderer.send('go', path),
-    
-    startProcessing: () => ipcRenderer.send('start-processing'),
+
+    startProcessing: (files) => {
+        console.log("Renderer sending files:", files); // debug
+        ipcRenderer.send('start-processing', files);
+    },
+    onProcessingComplete: (callback) =>
+        ipcRenderer.on('processing-complete', (_event, result) =>
+            callback(result)
+        ),
+
+
 
     getConfig: () => ipcRenderer.invoke('get-config'),
     updateConfig: (newConfig) => ipcRenderer.send('update-config', newConfig),
 
-    fileCacheChanged: (callback) => ipcRenderer.on('file-cache-changed', (_event, value) => callback(value)),
-    setFileCache: (files) => ipcRenderer.send('set-file-cache', files),
-    getFileCache: () => ipcRenderer.invoke('get-file-cache'),
-
-    setState: (state) => ipcRenderer.send('state-update', state),
-    stateUpdate: (callback) => ipcRenderer.on('state-update', (_event, value) => callback(value)),
-    progressUpdate: (callback) => ipcRenderer.on('progress-update', (_event, value) => callback(value)),
 
     getErrorCause: () => ipcRenderer.invoke('get-error-cause'),
     closeErrors: () => ipcRenderer.send('close-errors'),

@@ -1,7 +1,7 @@
 <script>
     import { onMount } from "svelte";
 
-    let config = null;
+    let config = $state(null);
 
     onMount(async () => {
         config = await window.electron.getConfig();
