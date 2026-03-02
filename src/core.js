@@ -24,52 +24,62 @@ const fileHandlers = {
 
 export async function redate(paths) {
     const config = getConfig();
+    const result = {
+        totalFiles: 0,
+        processed: 0,
+        skippedNoDate: 0,
+        errors: []
+    };
 
     for (const p of paths) {
         if (!fs.existsSync(p)) {
-            console.error(`Path does not exist: ${p}`);
+            result.errors.push(`Path does not exist: ${p}`);
             continue;
         }
 
         const stats = fs.statSync(p);
 
         if (stats.isFile()) {
-            await processFile(p, config);
+            await processFile(p, config, result);
         } else if (stats.isDirectory()) {
-            await processFiles(p, config);
+            await processFiles(p, config, result);
         }
     }
+
+    return result;
 }
 
 
-export async function processFiles(folderPath, config) {
-    if (!config || config == null) {
-        config = getConfig();
-    }
+export async function processFiles(folderPath, config, result) {
+    if (!config) config = getConfig();
     const files = fs.readdirSync(folderPath);
+
     for (const file of files) {
         const filePath = path.join(folderPath, file);
-
         if (!fs.statSync(filePath).isFile()) continue;
 
-        await processFile(filePath, config);
+        await processFile(filePath, config, result);
     }
 }
+export async function processFile(filePath, config, result) {
+    result.totalFiles += 1;
 
-export async function processFile(filePath, config) {
-    if (!config || config == null) {
-        config = getConfig();
+    try {
+        const date = await getDateFromFile(filePath);
+        if (!date) {
+            result.skippedNoDate += 1;
+            return;
+        }
+
+        const originalName = path.basename(filePath);
+        const newFileName = formatFileName(date, originalName, config);
+
+        applyFileHandling(filePath, newFileName, config);
+
+        result.processed += 1;
+    } catch (err) {
+        result.errors.push(`Error processing file ${filePath}: ${err.message}`);
     }
-
-    const date = await getDateFromFile(filePath);
-    if (!date) return;
-
-    const originalName = path.basename(filePath);
-    const newFileName = formatFileName(date, originalName, config);
-
-    applyFileHandling(filePath, newFileName, config);
-
-    console.log(`Processed: ${newFileName}`);
 }
 function applyFileHandling(srcPath, newFileName, config) {
     const dir = path.dirname(srcPath);
