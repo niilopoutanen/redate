@@ -17,7 +17,14 @@ program
     .command("process <paths...>")
     .description("Process file(s) or folder(s)")
     .action(async (paths) => {
-        await redate(paths);
+        const result = await redate(paths);
+        console.log(`Total files: ${result.totalFiles}`);
+        console.log(`Processed: ${result.processed}`);
+        console.log(`Skipped (no date): ${result.skippedNoDate}`);
+        if (result.errors.length > 0) {
+            console.log("Errors:");
+            result.errors.forEach((err) => console.log(`  - ${err}`));
+        }
     });
 
 const configCommand = program

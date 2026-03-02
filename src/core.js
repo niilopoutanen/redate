@@ -119,7 +119,6 @@ export async function getDateFromFile(filePath) {
         exif?.ModifyDate;
 
     if (!date) {
-        console.error(`No EXIF date found for file: ${filePath}`);
         return null;
     };
 
