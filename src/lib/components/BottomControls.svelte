@@ -71,6 +71,10 @@
         >
             <p>Done</p>
         </button>
+
+        <button>
+            <p>Open folder</p>
+        </button>
     {/if}
 
     {#if appState.status != APP_STATES.PROCESSING && appState.status != APP_STATES.DONE}
@@ -102,6 +106,7 @@
             flex-grow: 1;
             border: none;
             outline: none;
+            white-space: nowrap;
 
             display: flex;
             align-items: center;

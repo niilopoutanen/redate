@@ -2,6 +2,7 @@
     import { onMount } from "svelte";
     import BottomControls from "$lib/components/BottomControls.svelte";
     import { appState, APP_STATES } from "$lib/state.svelte.js";
+    import PreviewStack from "../../lib/components/PreviewStack.svelte";
 
     let droparea = $state();
 
@@ -26,7 +27,9 @@
             if (e.dataTransfer) {
                 const droppedPaths = Array.from(e.dataTransfer.files).map((f) => window.electron.showFilePath(f));
                 console.log("Files dropped:", droppedPaths);
+                appState.files = [];
                 appState.files.push(...droppedPaths);
+
             }
             document.startViewTransition(() => {
                 appState.status = APP_STATES.FILES_READY;
@@ -72,9 +75,7 @@
                 <p>Drop files or <br /> folders here</p>
             </div>
         {:else if appState.status === APP_STATES.FILES_READY}
-            <div class="droparea active">
-                <p>{appState.files.length} {appState.files.length === 1 ? "file" : "files"} ready</p>
-            </div>
+            <PreviewStack/>
         {:else if appState.status === APP_STATES.PROCESSING}
             <div>
                 <span class="loader"></span>
