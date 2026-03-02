@@ -1,10 +1,13 @@
 const { contextBridge, ipcRenderer, webUtils } = require('electron');
 
 contextBridge.exposeInMainWorld('electron', {
-    close: () => ipcRenderer.send('close'),
-    minimize: () => ipcRenderer.send('minimize'),
+    close: (windowType: 'drop' | 'settings') => ipcRenderer.send('close-window', windowType),
+    minimize: (windowType: 'drop' | 'settings') => ipcRenderer.send('minimize-window', windowType),
     settings: () => ipcRenderer.send('settings'),
-    browse: () => ipcRenderer.send('browse'),
+    browse: async () => {
+        const files = await ipcRenderer.invoke('browse');
+        return files;
+    },
     go: (path) => ipcRenderer.send('go', path),
 
     startProcessing: (files) => {

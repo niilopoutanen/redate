@@ -45,7 +45,15 @@
     {/if}
 
     {#if appState.status === APP_STATES.INITIAL}
-        <button>
+        <button
+            onclick={async () => {
+                const files = await window.electron.browse();
+                if (files && files.length > 0) {
+                    appState.files = files;
+                    changeStatus(APP_STATES.FILES_READY);
+                }
+            }}
+        >
             <img src={folder} alt="Browse files" />
         </button>
     {/if}
@@ -78,7 +86,7 @@
     {/if}
 
     {#if appState.status != APP_STATES.PROCESSING && appState.status != APP_STATES.DONE}
-        <button onclick={() => window.electron.close()}>
+        <button onclick={() => window.electron.close("drop")}>
             <img src={close} alt="Close app" />
         </button>
     {/if}

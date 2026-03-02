@@ -12,7 +12,14 @@
         const onDragOver = (e) => {
             e.preventDefault();
             e.stopPropagation();
-            droparea.classList.add("active");
+
+            if (!e.dataTransfer) return;
+
+            const hasFiles = Array.from(e.dataTransfer.items).some((item) => item.kind === "file");
+
+            if (hasFiles) {
+                droparea.classList.add("active");
+            }
         };
         const onDragLeave = (e) => {
             e.preventDefault();
@@ -25,15 +32,25 @@
             droparea.classList.remove("active");
 
             if (e.dataTransfer) {
-                const droppedPaths = Array.from(e.dataTransfer.files).map((f) => window.electron.showFilePath(f));
-                console.log("Files dropped:", droppedPaths);
-                appState.files = [];
-                appState.files.push(...droppedPaths);
+                const items = Array.from(e.dataTransfer.items);
+                const fileItems = items
+                    .filter((item) => item.kind === "file") // only allow files/folders
+                    .map((item) => {
+                        const file = item.getAsFile();
+                        return file ? window.electron.showFilePath(file) : null;
+                    })
+                    .filter(Boolean); // remove nulls
 
+                if (fileItems.length > 0) {
+                    console.log("Files dropped:", fileItems);
+                    appState.files = [];
+                    appState.files.push(...fileItems);
+
+                    document.startViewTransition(() => {
+                        appState.status = APP_STATES.FILES_READY;
+                    });
+                }
             }
-            document.startViewTransition(() => {
-                appState.status = APP_STATES.FILES_READY;
-            });
         };
 
         droparea.addEventListener("dragover", onDragOver);
@@ -75,7 +92,7 @@
                 <p>Drop files or <br /> folders here</p>
             </div>
         {:else if appState.status === APP_STATES.FILES_READY}
-            <PreviewStack/>
+            <PreviewStack />
         {:else if appState.status === APP_STATES.PROCESSING}
             <div>
                 <span class="loader"></span>

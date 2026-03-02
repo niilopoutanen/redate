@@ -9,6 +9,7 @@ import { getConfig, setConfig } from "redate-cli/config";
 
 const dev = !app.isPackaged;
 let dropWindow: BrowserWindow;
+let settingsWindow: BrowserWindow;
 
 declare global {
     interface Window {
@@ -58,7 +59,7 @@ function createDropWindow() {
 }
 
 function createSettingsWindow() {
-    const settingsWindow = new BrowserWindow({
+    settingsWindow = new BrowserWindow({
         width: 700,
         height: 400,
         autoHideMenuBar: true,
@@ -89,6 +90,35 @@ app.whenReady().then(() => {
 app.on('window-all-closed', () => {
     app.quit();
 });
+ipcMain.on('close-window', (_event, windowType: 'drop' | 'settings') => {
+    switch (windowType) {
+        case 'drop':
+            if (dropWindow && !dropWindow.isDestroyed()) {
+                dropWindow.close();
+            }
+            break;
+        case 'settings':
+            if (settingsWindow && !settingsWindow.isDestroyed()) {
+                settingsWindow.close();
+            }
+            break;
+    }
+});
+
+ipcMain.on('minimize-window', (_event, windowType: 'drop' | 'settings') => {
+    switch (windowType) {
+        case 'drop':
+            if (dropWindow && !dropWindow.isDestroyed()) {
+                dropWindow.minimize();
+            }
+            break;
+        case 'settings':
+            if (settingsWindow && !settingsWindow.isDestroyed()) {
+                settingsWindow.minimize();
+            }
+            break;
+    }
+});
 ipcMain.on('close', (event) => {
     app.quit();
 });
@@ -103,15 +133,17 @@ ipcMain.on('settings', (event) => {
 });
 
 
-ipcMain.on('browse', (event, title) => {
-    dialog.showOpenDialog({ properties: ['openFile', 'multiSelections'] }).then(function (response) {
-        if (!response.canceled) {
-
-        } else {
-            //No files selected
-        }
+ipcMain.handle('browse', async (_event) => {
+    const result = await dialog.showOpenDialog({
+        properties: ['openFile', 'multiSelections']
     });
-})
+
+    if (result.canceled) {
+        return [];
+    }
+
+    return result.filePaths;
+});
 
 ipcMain.handle('get-config', () => {
     return getConfig();

@@ -23,8 +23,8 @@
     <section class="content">
         <header>
             <div class="controls-windows">
-                <button onclick={() => window.electron.minimize()}> - </button>
-                <button onclick={() => window.electron.close()}> x </button>
+                <button onclick={() => window.electron.minimize("settings")}> - </button>
+                <button onclick={() => window.electron.close("settings")}> x </button>
             </div>
         </header>
         <div class="page">

@@ -9,9 +9,7 @@
     });
 
     function isFile(pathname) {
-        console.log("Checking if path is file:", pathname);
         if (typeof pathname !== "string") return false;
-        // Split by both slashes for cross-platform support
         const name = pathname.split(/[/\\]/).pop();
         return name.includes(".");
     }
