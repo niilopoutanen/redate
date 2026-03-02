@@ -118,13 +118,26 @@ ipcMain.handle('get-config', () => {
 });
 
 ipcMain.on('start-processing', async (event, files) => {
+    const startTime = Date.now();
+
     try {
         await redate(files, getConfig());
+
+        const elapsed = Date.now() - startTime;
+        if (elapsed < 1000) {
+            await new Promise(resolve => setTimeout(resolve, 1000 - elapsed));
+        }
+
         event.sender.send('processing-complete', {
             success: true
         });
 
     } catch (err) {
+        const elapsed = Date.now() - startTime;
+        if (elapsed < 1000) {
+            await new Promise(resolve => setTimeout(resolve, 1000 - elapsed));
+        }
+
         event.sender.send('processing-complete', {
             success: false,
             error: err.message

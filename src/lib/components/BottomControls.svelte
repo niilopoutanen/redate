@@ -1,4 +1,3 @@
-
 <script lang="ts">
     import folder from "$lib/vector/folder.svg";
     import settings from "$lib/vector/settings.svg";
@@ -7,18 +6,23 @@
 
     import { appState, APP_STATES } from "$lib/state.svelte.js";
 
-
     function stopProcessing() {
         if (appState.status === APP_STATES.PROCESSING) {
-            appState.status = APP_STATES.FILES_READY;
+            changeStatus(APP_STATES.FILES_READY);
         }
     }
 
-    function startProcessing(){
-        appState.status = APP_STATES.PROCESSING;
+    function startProcessing() {
+        changeStatus(APP_STATES.PROCESSING);
         const filesToProcess = $state.snapshot(appState.files);
         console.log("Starting processing for files:", filesToProcess);
         window.electron.startProcessing(filesToProcess);
+    }
+
+    function changeStatus(newStatus) {
+        document.startViewTransition(() => {
+            appState.status = newStatus;
+        });
     }
 </script>
 
@@ -30,10 +34,12 @@
     {/if}
 
     {#if appState.status === APP_STATES.FILES_READY}
-        <button onclick={() => {
-            appState.status = APP_STATES.INITIAL;
-            appState.files = [];
-        }}>
+        <button
+            onclick={() => {
+                changeStatus(APP_STATES.INITIAL);
+                appState.files = [];
+            }}
+        >
             <img src={back} alt="Go back" />
         </button>
     {/if}
@@ -57,7 +63,12 @@
     {/if}
 
     {#if appState.status === APP_STATES.DONE}
-        <button class="primary" onclick={() => {appState.status = APP_STATES.INITIAL;}}>
+        <button
+            class="primary"
+            onclick={() => {
+                changeStatus(APP_STATES.INITIAL);
+            }}
+        >
             <p>Done</p>
         </button>
     {/if}
@@ -71,7 +82,7 @@
 
 <style lang="scss">
     @use "$lib/styles/variables.scss" as *;
-    @use 'sass:color';
+    @use "sass:color";
 
     .controls {
         view-transition-name: bottom-controls;

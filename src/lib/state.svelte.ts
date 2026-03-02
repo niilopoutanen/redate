@@ -3,6 +3,7 @@ export const APP_STATES = {
     FILES_READY: "files-ready",
     PROCESSING: "processing",
     DONE: "done",
+    ERROR: "error"
 } as const;
 
 export const appState = $state({

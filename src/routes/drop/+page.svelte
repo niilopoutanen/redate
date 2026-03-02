@@ -4,38 +4,58 @@
     import { appState, APP_STATES } from "$lib/state.svelte.js";
 
     let droparea = $state();
-    onMount(() => {
-        droparea.addEventListener("dragover", (e) => {
+
+    $effect(() => {
+        if (!droparea) return;
+
+        const onDragOver = (e) => {
             e.preventDefault();
             e.stopPropagation();
             droparea.classList.add("active");
-        });
-        droparea.addEventListener("dragleave", (e) => {
+        };
+        const onDragLeave = (e) => {
             e.preventDefault();
             e.stopPropagation();
             droparea.classList.remove("active");
-        });
-        droparea.addEventListener("drop", (e) => {
+        };
+        const onDrop = (e) => {
             e.preventDefault();
             e.stopPropagation();
             droparea.classList.remove("active");
 
-            if (e.dataTransfer != null) {
+            if (e.dataTransfer) {
                 const droppedPaths = Array.from(e.dataTransfer.files).map((f) => window.electron.showFilePath(f));
-
                 console.log("Files dropped:", droppedPaths);
-
                 appState.files.push(...droppedPaths);
             }
-            appState.status = APP_STATES.FILES_READY;
-        });
+            document.startViewTransition(() => {
+                appState.status = APP_STATES.FILES_READY;
+            });
+        };
 
+        droparea.addEventListener("dragover", onDragOver);
+        droparea.addEventListener("dragleave", onDragLeave);
+        droparea.addEventListener("drop", onDrop);
+
+        // cleanup if droparea changes
+        return () => {
+            droparea.removeEventListener("dragover", onDragOver);
+            droparea.removeEventListener("dragleave", onDragLeave);
+            droparea.removeEventListener("drop", onDrop);
+        };
+    });
+
+    onMount(() => {
         window.electron.onProcessingComplete((result) => {
             if (result.success) {
-                appState.status = APP_STATES.DONE;
+                document.startViewTransition(() => {
+                    appState.status = APP_STATES.DONE;
+                });
             } else {
                 console.log("Processing failed:", result.error);
-                appState.status = APP_STATES.ERROR;
+                document.startViewTransition(() => {
+                    appState.status = APP_STATES.ERROR;
+                });
             }
         });
     });
@@ -56,12 +76,16 @@
                 <p>{appState.files.length} {appState.files.length === 1 ? "file" : "files"} ready</p>
             </div>
         {:else if appState.status === APP_STATES.PROCESSING}
-            <div class="droparea active">
-                <p>Processing...</p>
+            <div>
+                <span class="loader"></span>
             </div>
         {:else if appState.status === APP_STATES.DONE}
             <div class="done">
                 <p>Processing complete!</p>
+            </div>
+        {:else if appState.status === APP_STATES.ERROR}
+            <div class="error">
+                <p>Processing failed.</p>
             </div>
         {/if}
     </div>
@@ -105,6 +129,7 @@
             align-items: center;
             justify-content: center;
             padding: 0px 15px 0px 15px;
+            view-transition-name: content;
         }
     }
 
@@ -128,6 +153,26 @@
             font-size: 18px;
             font-weight: 600;
             text-align: center;
+        }
+    }
+
+    .loader {
+        width: 60px;
+        height: 60px;
+        border: 5px solid $accent;
+        border-bottom-color: transparent;
+        border-radius: 50%;
+        display: inline-block;
+        box-sizing: border-box;
+        animation: rotation 1s linear infinite;
+    }
+
+    @keyframes rotation {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
         }
     }
 </style>
