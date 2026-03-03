@@ -136,7 +136,7 @@
             .handle {
                 width: 50px;
                 height: 5px;
-                background-color: $layer-1;
+                background-color: $layer-2-solid;
                 border-radius: 1000px;
             }
         }
@@ -171,6 +171,7 @@
             font-size: 18px;
             font-weight: 600;
             text-align: center;
+            user-select: none;
         }
     }
 

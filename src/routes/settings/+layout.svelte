@@ -1,6 +1,12 @@
 <script>
     import { config } from "$lib/state.svelte.js";
     import { onMount } from "svelte";
+    import { page } from "$app/stores";
+    import drive from "$lib/vector/drive.svg";
+    import gear from "$lib/vector/gear.svg";
+    import menu from "$lib/vector/menu.svg";
+    import close from "$lib/vector/close.svg";
+    import dash from "$lib/vector/dash.svg";
     let { children } = $props();
 
     onMount(async () => {
@@ -12,19 +18,24 @@
 
 <main>
     <section class="sidebar">
-        <div class="drag"></div>
-        <a class="item" href="/settings">
+        <div class="drag">
+            <img class="icon" src="" />
+            <h1>ReDate</h1>
+        </div>
+        <a class="item" href="/settings" class:active={$page.url.pathname === "/settings"}>
+            <img class="icon" src={gear} />
             <p>General</p>
         </a>
-        <a class="item" href="/settings/files">
+        <a class="item" href="/settings/files" class:active={$page.url.pathname === "/settings/files"}>
+            <img class="icon" src={drive} />
             <p>File handling</p>
         </a>
     </section>
     <section class="content">
         <header>
             <div class="controls-windows">
-                <button onclick={() => window.electron.minimize("settings")}> - </button>
-                <button onclick={() => window.electron.close("settings")}> x </button>
+                <button onclick={() => window.electron.minimize("settings")}> <img src={dash} alt="Minimize" /> </button>
+                <button onclick={() => window.electron.close("settings")}> <img src={close} alt="Close" /> </button>
             </div>
         </header>
         <div class="page">
@@ -46,29 +57,49 @@
         font-family: "Inter", sans-serif;
         .sidebar {
             min-width: 200px;
-            background-color: $layer-0-solid;
+            background-color: $layer-0;
             padding: 10px;
-            gap: 10px;
+            border-right: 1px solid $layer-1-solid;
             display: flex;
             flex-direction: column;
             view-transition-name: settings-sidebar;
-
+            box-sizing: border-box;
             .drag {
                 width: 100%;
-                height: $titlebar-height;
                 -webkit-app-region: drag;
+                display: flex;
+                align-items: center;
+                padding-left: 10px;
+                gap: 10px;
+                img.icon {
+                    width: 30px;
+                    height: 30px;
+                    background-color: $layer-2-solid;
+                    border-radius: 10px;
+                }
+                h1 {
+                    font-size: 20px;
+                }
             }
             .item {
                 width: 100%;
-                background-color: $layer-1-solid;
                 padding: 10px;
                 box-sizing: border-box;
                 border-radius: 10px;
                 font-size: 14px;
                 color: white;
                 text-decoration: none;
+
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                transition: background-color 0.1s;
                 p {
                     margin: 0;
+                }
+
+                &.active {
+                    background-color: $layer-1;
                 }
             }
         }
@@ -79,17 +110,16 @@
             header {
                 -webkit-app-region: drag;
                 width: 100%;
-                background-color: $layer-0-solid;
+                background-color: $layer-0;
                 min-height: $titlebar-height;
                 view-transition-name: settings-header;
 
                 .controls-windows {
-                    width: 100%;
                     height: 100%;
+                    width: 100%;
                     display: flex;
                     justify-content: flex-end;
                     align-items: center;
-                    gap: 5px;
 
                     button {
                         -webkit-app-region: no-drag;
@@ -99,9 +129,17 @@
                         outline: none;
                         border: none;
                         transition: background-color 0.1s;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
 
                         &:hover {
-                            background-color: $layer-1-solid;
+                            background-color: $layer-1;
+                        }
+
+                        img {
+                            width: 10px;
+                            height: 10px;
                         }
                     }
                 }
@@ -124,11 +162,23 @@
                     margin-left: 5px;
                 }
                 :global(.container) {
-                    background-color: $layer-0-solid;
+                    background-color: $layer-1;
                     padding: 10px;
                     border-radius: 10px;
                 }
             }
         }
+    }
+
+    :root::view-transition-old(root) {
+        animation:
+            90ms cubic-bezier(0.4, 0, 1, 1) both fade-out,
+            300ms cubic-bezier(0.4, 0, 0.2, 1) both slide-to-left;
+    }
+
+    :root::view-transition-new(root) {
+        animation:
+            210ms cubic-bezier(0, 0, 0.2, 1) 90ms both fade-in,
+            300ms cubic-bezier(0.4, 0, 0.2, 1) both slide-from-right;
     }
 </style>

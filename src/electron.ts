@@ -34,6 +34,7 @@ function createDropWindow() {
         autoHideMenuBar: true,
         frame: false,
         transparent: true,
+        title: "ReDate",
         webPreferences: {
             nodeIntegration: true,
             preload: getPreloadPath()
@@ -64,6 +65,8 @@ function createSettingsWindow() {
         height: 400,
         autoHideMenuBar: true,
         titleBarStyle: "hidden",
+        backgroundMaterial: "mica",
+        title: "ReDate Settings",
         webPreferences: {
             nodeIntegration: true,
             preload: getPreloadPath()

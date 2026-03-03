@@ -28,13 +28,13 @@
 
 <div class="controls">
     {#if appState.status === APP_STATES.INITIAL}
-        <button onclick={() => window.electron.settings()}>
+        <button onclick={() => window.electron.settings()} title="Settings">
             <img src={settings} alt="Settings" />
         </button>
     {/if}
 
     {#if appState.status === APP_STATES.FILES_READY}
-        <button
+        <button  title="Go back"
             onclick={() => {
                 changeStatus(APP_STATES.INITIAL);
                 appState.files = [];
@@ -45,7 +45,7 @@
     {/if}
 
     {#if appState.status === APP_STATES.INITIAL}
-        <button
+        <button title="Select from files"
             onclick={async () => {
                 const files = await window.electron.browse();
                 if (files && files.length > 0) {
@@ -54,18 +54,18 @@
                 }
             }}
         >
-            <img src={folder} alt="Browse files" />
+            <img src={folder} alt="Select from files" />
         </button>
     {/if}
 
     {#if appState.status === APP_STATES.FILES_READY}
-        <button class="primary" onclick={startProcessing}>
+        <button class="primary" onclick={startProcessing} title="Start">
             <p>Start</p>
         </button>
     {/if}
 
     {#if appState.status === APP_STATES.PROCESSING}
-        <button onclick={stopProcessing}>
+        <button onclick={stopProcessing} >
             <p>Cancel</p>
         </button>
     {/if}
@@ -86,7 +86,7 @@
     {/if}
 
     {#if appState.status != APP_STATES.PROCESSING && appState.status != APP_STATES.DONE}
-        <button onclick={() => window.electron.close("drop")}>
+        <button onclick={() => window.electron.close("drop")} title="Close app">
             <img src={close} alt="Close app" />
         </button>
     {/if}
@@ -104,17 +104,17 @@
         padding: 15px;
 
         button {
-            background-color: $layer-2;
-
+            background-color: $layer-1-solid;
             width: 60px;
             min-width: 35px;
             height: 35px;
             border-radius: 10px;
             flex-shrink: 1;
             flex-grow: 1;
-            border: none;
             outline: none;
+            border: none;
             white-space: nowrap;
+            cursor: pointer;
 
             display: flex;
             align-items: center;
@@ -126,6 +126,10 @@
                 flex-grow 0.3s ease,
                 flex-basis 0.3s ease;
 
+            img {
+                width: 14px;
+                height: 14px;
+            }
             &:global(.primary) {
                 background-color: $accent;
                 flex-grow: 2;

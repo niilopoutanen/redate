@@ -1,13 +1,8 @@
 <script>
     import { config } from "$lib/state.svelte.js";
-
-    import { onMount } from "svelte";
-
-
 </script>
 
-<h1>Files</h1>
-
+<h1>File handling</h1>
 <p class="label">File handling method:</p>
 <div class="container">
     <select bind:value={config.fileHandling}>
