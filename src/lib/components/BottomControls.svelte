@@ -79,10 +79,6 @@
         >
             <p>Done</p>
         </button>
-
-        <button>
-            <p>Open folder</p>
-        </button>
     {/if}
 
     {#if appState.status != APP_STATES.PROCESSING && appState.status != APP_STATES.DONE}

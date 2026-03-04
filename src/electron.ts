@@ -156,7 +156,7 @@ ipcMain.on('start-processing', async (event, files) => {
     const startTime = Date.now();
 
     try {
-        await redate(files, getConfig());
+        const result = await redate(files, getConfig());
 
         const elapsed = Date.now() - startTime;
         if (elapsed < 1000) {
@@ -164,7 +164,8 @@ ipcMain.on('start-processing', async (event, files) => {
         }
 
         event.sender.send('processing-complete', {
-            success: true
+            success: true,
+            result: result
         });
 
     } catch (err) {
@@ -175,7 +176,9 @@ ipcMain.on('start-processing', async (event, files) => {
 
         event.sender.send('processing-complete', {
             success: false,
-            error: err.message
+            result: {
+                errors: [err.message]
+            }
         });
     }
 });

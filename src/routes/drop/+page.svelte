@@ -67,12 +67,14 @@
 
     onMount(() => {
         window.electron.onProcessingComplete((result) => {
+            appState.latestResult = result.result;
+            console.log(result);
             if (result.success) {
                 document.startViewTransition(() => {
                     appState.status = APP_STATES.DONE;
                 });
             } else {
-                console.log("Processing failed:", result.error);
+                console.log("Processing failed:", result.errors);
                 document.startViewTransition(() => {
                     appState.status = APP_STATES.ERROR;
                 });
@@ -99,11 +101,20 @@
             </div>
         {:else if appState.status === APP_STATES.DONE}
             <div class="done">
-                <p>Processing complete!</p>
+                <p class="title">Processing complete!</p>
+                {#if appState.latestResult}
+                    <p class="details">
+                        {appState.latestResult.processed} files processed
+                        {#if appState.latestResult.skippedNoDate > 0}
+                            , {appState.latestResult.skippedNoDate} skipped (no date information)
+                        {/if}
+                    </p>
+                {/if}
             </div>
         {:else if appState.status === APP_STATES.ERROR}
             <div class="error">
-                <p>Processing failed.</p>
+                <p class="title">Processing failed.</p>
+                <p class="cause">{appState.latestResult?.errors}</p>
             </div>
         {/if}
     </div>
@@ -173,6 +184,14 @@
             text-align: center;
             user-select: none;
         }
+    }
+    .details {
+        font-size: 13px;
+        text-align: center;
+    }
+    .title {
+        color: white;
+        text-align: center;
     }
 
     .loader {

@@ -10,6 +10,7 @@ export const appState = $state({
     files: [],
     processing: false,
     status: "initial",
+    latestResult: null
 });
 
 export const config = $state({
