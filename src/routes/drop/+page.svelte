@@ -134,7 +134,18 @@
         background-color: $layer-0-solid;
         border-radius: 15px;
         border: 2px solid $layer-1-solid;
+        animation: app-load 400ms ease forwards;
 
+        @keyframes app-load {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
         .header {
             -webkit-app-region: drag;
             view-transition-name: header;

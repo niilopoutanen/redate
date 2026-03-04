@@ -53,7 +53,7 @@ function createDropWindow() {
         dropWindow.webContents.openDevTools({ mode: "detach" });
     }
     else {
-        dropWindow.loadFile("build/drop.html");
+        dropWindow.loadFile("drop.html");
     }
 
     dropWindow.show();
@@ -77,11 +77,11 @@ function createSettingsWindow() {
         settingsWindow.webContents.openDevTools({ mode: "detach" });
     }
     else {
-        settingsWindow.loadFile("build/settings.html");
+        settingsWindow.loadFile("settings.html");
     }
     settingsWindow.show();
 }
-
+app.commandLine.appendSwitch('lang', 'en-US');
 app.whenReady().then(() => {
     createDropWindow();
     nativeTheme.themeSource = "dark";

@@ -3,7 +3,7 @@ import path from 'path';
 import packager from 'electron-packager';
 
 const packagerOptions = {
-    dir: '.',
+    dir: 'build',
     out: 'dist',
     platform: ['win32', 'darwin'],
     ignore: [
@@ -13,8 +13,8 @@ const packagerOptions = {
         'cleaner.cjs',
         '.gitignore',
         'README.md',
-        '^/server($|/)',
-        '^/electron($|/)',
+        '^/src($|/)',
+        '^/static($|/)',
         'svelte.config.js',
         'vite.config.ts',
         '.svelte-kit($|/)'
@@ -23,21 +23,32 @@ const packagerOptions = {
     icon: "/static/favicon.ico"
 };
 
-packager(packagerOptions).then(outPath => {
-    moveFiles(outPath);
+prepareBuildDir();
+packager(packagerOptions).then(outPaths => {
+    outPaths.forEach(out => pruneLocales(out));
 }).catch(err => {
     console.log(err);
 });
+function prepareBuildDir() {
+    console.log("moving required files");
 
-function moveFiles(buildPath) {
-    return;
-    for(const path of buildPath){
-        console.log("processing path", path);
-        fs.rmSync(`${path}/resources`, { recursive: true });
-        fs.mkdirSync(`${path}/resources/app`, { recursive: true });
-        fs.cpSync("./build", `${path}/build`, { recursive: true });
-        fs.cpSync("./build", `${path}/resources/app/build`, { recursive: true });
-        fs.cpSync("package.json", `${path}/resources/app/package.json`);
-    }
+    const packagePath = path.join(process.cwd(), "package.json");
+    const buildPackagePath = path.join(process.cwd(), "build", "package.json");
 
+    const pkg = JSON.parse(fs.readFileSync(packagePath, "utf-8"));
+
+    pkg.main = "electron.js";
+
+    fs.writeFileSync(buildPackagePath, JSON.stringify(pkg, null, 2));
+}
+
+function pruneLocales(outPath) {
+    const localesDir = path.join(outPath, 'locales');
+    if (!fs.existsSync(localesDir)) return;
+
+    fs.readdirSync(localesDir).forEach(file => {
+        if (!file.startsWith('en')) {
+            fs.unlinkSync(path.join(localesDir, file));
+        }
+    });
 }
