@@ -50,10 +50,11 @@ function createDropWindow() {
     //liquidGlass.addView(dropWindow.getNativeWindowHandle(), options);
     if (dev) {
         dropWindow.loadURL("http://localhost:5173/drop");
-        dropWindow.webContents.openDevTools({ mode: "detach" });
     }
     else {
-        dropWindow.loadFile("drop.html");
+        dropWindow.loadFile("build/drop.html");
+        dropWindow.webContents.openDevTools({ mode: "detach" });
+
     }
 
     dropWindow.show();
@@ -77,7 +78,7 @@ function createSettingsWindow() {
         settingsWindow.webContents.openDevTools({ mode: "detach" });
     }
     else {
-        settingsWindow.loadFile("settings.html");
+        settingsWindow.loadFile("build/settings.html");
     }
     settingsWindow.show();
 }
