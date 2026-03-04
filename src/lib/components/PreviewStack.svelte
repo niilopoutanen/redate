@@ -1,42 +1,44 @@
 <script>
+    import onefile from "$lib/assets/onefile.png";
+    import twofiles from "$lib/assets/twofiles.png";
+    import manyfiles from "$lib/assets/manyfiles.png";
+    import foldersandfiles from "$lib/assets/foldersandfiles.png";
+    import manyfolders from "$lib/assets/manyfolders.png";
+    import folder from "$lib/assets/folder.png";
+
     import { appState } from "$lib/state.svelte";
 
-    let fileCount = $derived.by(() => {
-        return appState.files.filter((f) => isFile(f)).length;
-    });
-    let folderCount = $derived.by(() => {
-        return appState.files.filter((f) => !isFile(f)).length;
-    });
+    let fileCount = $derived.by(() => appState.files.filter((f) => isFile(f)).length);
+    let folderCount = $derived.by(() => appState.files.filter((f) => !isFile(f)).length);
 
     function isFile(pathname) {
         if (typeof pathname !== "string") return false;
         const name = pathname.split(/[/\\]/).pop();
         return name.includes(".");
     }
+
+    // Helper to pick the right image
+    let previewImage = $derived.by(() =>
+        fileCount == 1 && folderCount == 0
+            ? onefile
+            : fileCount == 2 && folderCount == 0
+              ? twofiles
+              : fileCount > 2 && folderCount == 0
+                ? manyfiles
+                : fileCount > 0 && folderCount > 0
+                  ? foldersandfiles
+                  : fileCount == 0 && folderCount > 1
+                    ? manyfolders
+                    : fileCount == 0 && folderCount > 0
+                      ? folder
+                      : null,
+    );
 </script>
 
 <div class="info">
     <div class="preview-stack">
-        {#if fileCount == 1 && folderCount == 0}
-            <img src="/assets/onefile.png" alt="" />
-        {/if}
-
-        {#if fileCount == 2 && folderCount == 0}
-            <img src="/assets/twofiles.png" alt="" />
-        {/if}
-
-        {#if fileCount > 2 && folderCount == 0}
-            <img src="/assets/manyfiles.png" alt="" />
-        {/if}
-
-        {#if fileCount > 0 && folderCount > 0}
-            <img src="/assets/foldersandfiles.png" alt="" />
-        {/if}
-
-        {#if fileCount == 0 && folderCount > 1}
-            <img src="/assets/manyfolders.png" alt="" />
-        {:else if fileCount == 0 && folderCount > 0}
-            <img src="/assets/folder.png" alt="" />
+        {#if previewImage}
+            <img src={previewImage} alt="" />
         {/if}
     </div>
     <p class="details">

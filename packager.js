@@ -6,6 +6,7 @@ const packagerOptions = {
     dir: 'build',
     out: 'dist',
     platform: ['win32', 'darwin'],
+    asar: true,
     ignore: [
         'node_modules*',
         'tsconfig.json',
