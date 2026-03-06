@@ -50,10 +50,11 @@ function createDropWindow() {
     //liquidGlass.addView(dropWindow.getNativeWindowHandle(), options);
     if (dev) {
         dropWindow.loadURL("http://localhost:5173/drop");
+        dropWindow.webContents.openDevTools({ mode: "detach" });
+
     }
     else {
         dropWindow.loadFile("build/drop.html");
-        dropWindow.webContents.openDevTools({ mode: "detach" });
 
     }
 

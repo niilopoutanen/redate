@@ -47,7 +47,6 @@
 <style lang="scss">
     @use "$lib/styles/variables.scss" as *;
     $titlebar-height: 32px;
-
     main {
         display: flex;
         height: 100%;
@@ -55,6 +54,7 @@
         box-sizing: border-box;
         flex-grow: 1;
         font-family: "Inter", sans-serif;
+        overflow: hidden;
         .sidebar {
             min-width: 200px;
             background-color: $layer-0;
@@ -94,23 +94,28 @@
                 align-items: center;
                 gap: 10px;
                 transition: background-color 0.1s;
+                border: 1px solid transparent;
                 p {
                     margin: 0;
                 }
 
                 &.active {
                     background-color: $layer-1;
+                    border: 1px solid $layer-2;
+                    box-sizing: border-box;
                 }
             }
         }
 
         .content {
             width: 100%;
+            height: 100%;
+            position: relative;
 
             header {
+                position: absolute;
                 -webkit-app-region: drag;
                 width: 100%;
-                background-color: $layer-0;
                 min-height: $titlebar-height;
                 view-transition-name: settings-header;
 
@@ -146,10 +151,13 @@
             }
 
             .page {
+                height: 100%;
                 flex-grow: 1;
                 display: flex;
                 flex-direction: column;
                 padding: 10px;
+                padding-top: $titlebar-height + 10px;
+                overflow-y: auto;
 
                 :global(h1) {
                     margin-top: 0;
@@ -163,6 +171,7 @@
                 }
                 :global(.container) {
                     background-color: $layer-1;
+                    border: 1px solid $layer-2;
                     padding: 10px;
                     border-radius: 10px;
                 }
