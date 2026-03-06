@@ -1,0 +1,53 @@
+@use "$lib/styles/variables.scss" as *;
+
+:root {
+    color-scheme: dark;
+}
+
+h1 {
+    margin-top: 0;
+}
+
+.container {
+    background-color: $layer-1;
+    border: 1px solid $layer-2;
+    padding: 5px 10px;
+    border-radius: 10px;
+    margin-bottom: 5px;
+    display: flex;
+    flex-direction: column;
+
+
+    .control {
+        display: flex;
+        align-items: center;
+        padding: 5px 0;
+    }
+
+    .separator{
+        width: 100%;
+        height: 2px;
+        margin: 5px 0;
+        background-color: $layer-2;
+    }
+
+    .label {
+        margin-right: auto !important;
+    }
+
+    select {
+        border-radius: 5px;
+        background-color: $layer-2;
+        border: 1px solid $layer-2-solid;
+        outline: none;
+        padding: 5px;
+    }
+}
+
+.label {
+    margin: 0 !important;
+    color: rgb(223, 223, 223);
+    font-size: 14px;
+    margin-bottom: 5px;
+    margin-left: 5px;
+}

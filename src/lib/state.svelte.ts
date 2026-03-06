@@ -17,3 +17,8 @@ export const config = $state({
     fileHandling: null,
     format: "",
 });
+
+export const guiConfig = $state({
+    confirmProcessing: true,
+    quitWhenDone: false,
+});

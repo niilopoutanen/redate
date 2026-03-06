@@ -7,6 +7,8 @@
     import menu from "$lib/vector/menu.svg";
     import close from "$lib/vector/close.svg";
     import dash from "$lib/vector/dash.svg";
+
+    import "$lib/styles/settings.scss";
     let { children } = $props();
 
     onMount(async () => {
@@ -64,12 +66,30 @@
             flex-direction: column;
             view-transition-name: settings-sidebar;
             box-sizing: border-box;
+            transition: min-width 0.2s ease;
+
+            @media (max-width: 450px){
+                min-width: 70px;
+                width: 70px;
+
+                .drag h1{
+                    display: none;
+                }
+                .item{
+                    width: 100%;
+                    justify-content: center;
+                    p{
+                        display: none;
+                    }
+                }
+            }
             .drag {
                 width: 100%;
                 -webkit-app-region: drag;
                 display: flex;
                 align-items: center;
                 padding-left: 10px;
+                min-height: 50px;
                 gap: 10px;
                 img.icon {
                     width: 30px;
@@ -79,6 +99,7 @@
                 }
                 h1 {
                     font-size: 20px;
+                    margin: 0;
                 }
             }
             .item {
@@ -97,6 +118,7 @@
                 border: 1px solid transparent;
                 p {
                     margin: 0;
+                    white-space: nowrap;
                 }
 
                 &.active {
@@ -159,20 +181,16 @@
                 padding-top: $titlebar-height + 10px;
                 overflow-y: auto;
 
-                :global(h1) {
-                    margin-top: 0;
+                &::-webkit-scrollbar {
+                    width: 10px;
                 }
-                :global(p.label) {
-                    margin: 0;
-                    color: $text-secondary;
-                    font-size: 14px;
-                    margin-bottom: 5px;
-                    margin-left: 5px;
+
+                &::-webkit-scrollbar-track {
+                    background: transparent;
                 }
-                :global(.container) {
-                    background-color: $layer-1;
-                    border: 1px solid $layer-2;
-                    padding: 10px;
+
+                &::-webkit-scrollbar-thumb {
+                    background: $layer-2;
                     border-radius: 10px;
                 }
             }
