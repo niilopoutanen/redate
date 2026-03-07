@@ -7,6 +7,8 @@ import { dirname } from 'path';
 const dev = !app.isPackaged;
 export let dropWindow: BrowserWindow;
 export let settingsWindow: BrowserWindow;
+export let onboardingWindow: BrowserWindow;
+
 export const store = new Store({
     defaults: {
         guiConfig: {
@@ -86,8 +88,38 @@ export function createSettingsWindow() {
     }
     settingsWindow.show();
 }
+
+
+export function createOnBoardingWindow() {
+    onboardingWindow = new BrowserWindow({
+        width: 600,
+        height: 600,
+        minWidth: 600,
+        minHeight: 600,
+        autoHideMenuBar: true,
+        titleBarStyle: "hidden",
+        title: "ReDate",
+        transparent: true,
+        resizable: false,
+        icon: path.join(dirName(), '/icon.png'),
+        webPreferences: {
+            nodeIntegration: true,
+            preload: path.join(dirName() + "/preload.cjs")
+        },
+    })
+    if (dev) {
+        onboardingWindow.loadURL("http://localhost:5173/onboarding");
+        onboardingWindow.webContents.openDevTools({ mode: "detach" });
+    }
+    else {
+        onboardingWindow.loadFile("build/onboarding.html");
+    }
+    onboardingWindow.show();
+}
 app.commandLine.appendSwitch('lang', 'en-US');
 app.whenReady().then(() => {
+    createOnBoardingWindow();
+    return;
     createDropWindow();
     nativeTheme.themeSource = "dark";
     app.on('activate', () => {

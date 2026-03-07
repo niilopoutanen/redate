@@ -2,7 +2,7 @@
     import { onMount } from "svelte";
     import BottomControls from "$lib/components/BottomControls.svelte";
     import { appState, APP_STATES, guiConfig } from "$lib/state.svelte.js";
-    import PreviewStack from "../../lib/components/PreviewStack.svelte";
+    import PreviewStack from "$lib/components/PreviewStack.svelte";
 
     let droparea = $state();
 
@@ -143,6 +143,7 @@
         border-radius: 15px;
         border: 2px solid $layer-2;
         animation: app-load 400ms ease forwards;
+        overflow: hidden;
 
         @keyframes app-load {
             from {
@@ -162,6 +163,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            z-index: 2;
 
             .handle {
                 width: 50px;
@@ -200,6 +202,7 @@
         p {
             font-size: 18px;
             font-weight: 600;
+            margin: 0;
             text-align: center;
             user-select: none;
         }

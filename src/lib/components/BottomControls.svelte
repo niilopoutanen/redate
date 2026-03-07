@@ -129,6 +129,7 @@
             }
             &:global(.primary) {
                 background-color: $accent;
+                border: 1px solid $accent;
                 flex-grow: 2;
                 flex-basis: 1;
 
@@ -137,7 +138,7 @@
                 }
             }
             &:hover {
-                background-color: #ffffff20;
+                background-color: $layer-2;
                 transform: scale(1.05);
                 img{
                     transform: scale(1.1);
