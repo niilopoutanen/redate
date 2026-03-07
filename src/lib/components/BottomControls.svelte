@@ -100,7 +100,8 @@
         padding: 15px;
 
         button {
-            background-color: $layer-1-solid;
+            background-color: $layer-1;
+            border: 1px solid $layer-2;
             width: 60px;
             min-width: 35px;
             height: 35px;
@@ -108,7 +109,6 @@
             flex-shrink: 1;
             flex-grow: 1;
             outline: none;
-            border: none;
             white-space: nowrap;
             cursor: pointer;
 
@@ -125,6 +125,7 @@
             img {
                 width: 14px;
                 height: 14px;
+                transition: transform 0.2s ease;
             }
             &:global(.primary) {
                 background-color: $accent;
@@ -137,6 +138,10 @@
             }
             &:hover {
                 background-color: #ffffff20;
+                transform: scale(1.05);
+                img{
+                    transform: scale(1.1);
+                }
             }
             &:active {
                 transform: scale(0.95);

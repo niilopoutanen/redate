@@ -88,6 +88,10 @@
                     color: $text-secondary;
                     font-size: 12px;
                 }
+
+                &:hover{
+                    background-color: $layer-2;
+                }
             }
         }
         .preview{

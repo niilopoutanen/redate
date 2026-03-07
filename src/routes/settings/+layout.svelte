@@ -29,15 +29,15 @@
 <main>
     <section class="sidebar">
         <div class="drag">
-            <img class="icon" src={icon} alt="ReDate"/>
+            <img class="icon" src={icon} alt="ReDate" />
             <h1>ReDate</h1>
         </div>
         <a class="item" href="/settings" class:active={$page.url.pathname === "/settings"}>
-            <img class="icon" src={gear} alt="General settings"/>
+            <img class="icon" src={gear} alt="General settings" />
             <p>General</p>
         </a>
         <a class="item" href="/settings/files" class:active={$page.url.pathname === "/settings/files"}>
-            <img class="icon" src={drive} alt="File handling settings"/>
+            <img class="icon" src={drive} alt="File handling settings" />
             <p>File handling</p>
         </a>
     </section>
@@ -65,32 +65,18 @@
         flex-grow: 1;
         font-family: "Inter", sans-serif;
         overflow: hidden;
+        background-color: $layer-0;
         .sidebar {
             min-width: 200px;
-            background-color: $layer-0;
+            background-color: $layer-1;
             padding: 10px;
-            border-right: 1px solid $layer-1-solid;
+            border-right: 1px solid $layer-2;
             display: flex;
             flex-direction: column;
             view-transition-name: settings-sidebar;
             box-sizing: border-box;
             transition: min-width 0.2s ease;
 
-            @media (max-width: 450px) {
-                min-width: 70px;
-                width: 70px;
-
-                .drag h1 {
-                    display: none;
-                }
-                .item {
-                    width: 100%;
-                    justify-content: center;
-                    p {
-                        display: none;
-                    }
-                }
-            }
             .drag {
                 width: 100%;
                 -webkit-app-region: drag;
@@ -103,7 +89,7 @@
                 img.icon {
                     width: 50px;
                     height: 50px;
-                    background-color: $layer-2-solid;
+                    background-color: $layer-2;
                     border-radius: 10px;
                 }
                 h1 {
@@ -131,9 +117,28 @@
                 }
 
                 &.active {
-                    background-color: $layer-1;
-                    border: 1px solid $layer-2;
+                    background-color: $layer-2;
+                    border: 1px solid $layer-3;
                     box-sizing: border-box;
+                }
+            }
+
+            @media (max-width: 450px) {
+                min-width: 70px;
+                width: 70px;
+
+                .drag {
+                    padding: 0;
+                }
+                .drag h1 {
+                    display: none;
+                }
+                .item {
+                    width: 100%;
+                    justify-content: center;
+                    p {
+                        display: none;
+                    }
                 }
             }
         }
@@ -142,9 +147,11 @@
             width: 100%;
             height: 100%;
             position: relative;
-
+            overflow-y: scroll;
             header {
-                position: absolute;
+                position: fixed;
+                left: 0;
+                top: 0;
                 -webkit-app-region: drag;
                 width: 100%;
                 min-height: $titlebar-height;
@@ -182,26 +189,25 @@
             }
 
             .page {
-                height: 100%;
+                height: auto;
                 flex-grow: 1;
                 display: flex;
                 flex-direction: column;
                 padding: 15px;
                 padding-top: $titlebar-height + 10px;
-                overflow-y: auto;
+            }
 
-                &::-webkit-scrollbar {
-                    width: 10px;
-                }
+            &::-webkit-scrollbar {
+                width: 10px;
+            }
 
-                &::-webkit-scrollbar-track {
-                    background: transparent;
-                }
+            &::-webkit-scrollbar-track {
+                background: transparent;
+            }
 
-                &::-webkit-scrollbar-thumb {
-                    background: $layer-2;
-                    border-radius: 10px;
-                }
+            &::-webkit-scrollbar-thumb {
+                background: $layer-2;
+                border-radius: 10px;
             }
         }
     }

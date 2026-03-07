@@ -131,9 +131,9 @@
         height: 100%;
         color: #818181;
         font-family: "Inter", sans-serif;
-        background-color: $layer-0-solid;
+        background-color: $layer-0;
         border-radius: 15px;
-        border: 2px solid $layer-1-solid;
+        border: 2px solid $layer-2;
         animation: app-load 400ms ease forwards;
 
         @keyframes app-load {
@@ -158,7 +158,7 @@
             .handle {
                 width: 50px;
                 height: 5px;
-                background-color: $layer-2-solid;
+                background-color: $layer-3;
                 border-radius: 1000px;
             }
         }

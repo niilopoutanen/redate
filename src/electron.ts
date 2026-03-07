@@ -70,7 +70,6 @@ export function createSettingsWindow() {
         minHeight: 300,
         autoHideMenuBar: true,
         titleBarStyle: "hidden",
-        backgroundMaterial: "mica",
         title: "ReDate Settings",
         icon: path.join(dirName(), '/icon.png'),
         webPreferences: {
