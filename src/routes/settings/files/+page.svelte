@@ -7,7 +7,7 @@
 <div class="container">
     <div class="control">
         <p class="label">File handling method:</p>
-        <select bind:value={config.fileHandling}>
+        <select class="input" bind:value={config.fileHandling}>
             <option value="rename">Rename</option>
             <option value="copy">Copy</option>
             <option value="copytofolder">Copy to subfolder</option>
@@ -15,7 +15,8 @@
     </div>
 </div>
 
+<p class="label">Date format:</p>
+
 <div class="container">
-    <p class="label">Date format: </p>
-    <FormatBuilder/>
+    <FormatBuilder />
 </div>
