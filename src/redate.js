@@ -3,7 +3,8 @@ import { Command } from "commander";
 import https from "https";
 import { execSync } from "child_process";
 import readline from "readline";
-import { getConfig, setConfig, TOKENS, DEFAULT_CONFIG } from "./config.js";
+import { getConfig, setConfig } from "./config.js";
+import { DEFAULT_CONFIG } from "./defaults.js";
 import redate from "./core.js";
 
 const program = new Command();
@@ -11,7 +12,7 @@ const program = new Command();
 program
     .name("redate")
     .description("Rename images based on EXIF dates")
-    .version("0.3.1");
+    .version("0.4.0");
 
 program
     .command("process <paths...>")

@@ -1,7 +1,8 @@
 import fs from "fs";
 import path from "path";
 import exifr from "exifr";
-import { getConfig, TOKENS } from "./config.js";
+import { getConfig } from "./config.js";
+import { TOKENS } from "./defaults.js";
 
 const fileHandlers = {
     rename: (src, dest) => {
