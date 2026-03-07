@@ -4,6 +4,35 @@ import exifr from "exifr";
 import { getConfig } from "./config.js";
 import { TOKENS } from "./defaults.js";
 
+
+/**
+ * @typedef {Object<string, any>} Config
+ * A flexible config object where keys and structure can change.
+ */
+/**
+ * @typedef {Object} Result
+ * @property {number} totalFiles - Total number of files encountered.
+ * @property {number} processed - Number of files successfully processed.
+ * @property {number} skippedNoDate - Number of files skipped due to missing date.
+ * @property {string[]} errors - Array of error messages.
+ */
+
+/**
+ * @typedef {Object} ExifData
+ * @property {Date} [DateTimeOriginal]
+ * @property {Date} [CreateDate]
+ * @property {Date} [ModifyDate]
+ * @property {string} [OffsetTimeOriginal]
+ */
+
+/**
+ * Process an array of paths (files or directories).
+ * @param {string[]} paths - Array of file or folder paths.
+ * @returns {Promise<Result>} The summary of the processing.
+ */
+
+
+/** @type {Record<string, (src: string, dest: string) => void>} */
 const fileHandlers = {
     rename: (src, dest) => {
         fs.renameSync(src, dest);
@@ -22,6 +51,7 @@ const fileHandlers = {
         fs.copyFileSync(src, path.join(targetDir, path.basename(dest)));
     }
 };
+
 
 export async function redate(paths) {
     const config = getConfig();
@@ -50,7 +80,12 @@ export async function redate(paths) {
     return result;
 }
 
-
+/**
+ * Process all files in a folder.
+ * @param {string} folderPath - Path to the folder.
+ * @param {Config} config - Configuration object.
+ * @param {Result} result - Result object to update.
+ */
 export async function processFiles(folderPath, config, result) {
     if (!config) config = getConfig();
     const files = fs.readdirSync(folderPath);
@@ -62,6 +97,13 @@ export async function processFiles(folderPath, config, result) {
         await processFile(filePath, config, result);
     }
 }
+
+/**
+ * Process a single file.
+ * @param {string} filePath - Path to the file.
+ * @param {Config} config - Configuration object.
+ * @param {Result} result - Result object to update.
+ */
 export async function processFile(filePath, config, result) {
     result.totalFiles += 1;
 
@@ -82,6 +124,13 @@ export async function processFile(filePath, config, result) {
         result.errors.push(`Error processing file ${filePath}: ${err.message}`);
     }
 }
+
+/**
+ * Apply the configured file handling operation.
+ * @param {string} srcPath - Source file path.
+ * @param {string} newFileName - New file name.
+ * @param {Config} config - Configuration object.
+ */
 function applyFileHandling(srcPath, newFileName, config) {
     const dir = path.dirname(srcPath);
     const dest = path.join(dir, newFileName);
@@ -95,7 +144,13 @@ function applyFileHandling(srcPath, newFileName, config) {
     handler(srcPath, dest);
 }
 
-
+/**
+ * Format a filename according to the config format and tokens.
+ * @param {Date} date - Date to use for formatting.
+ * @param {string} originalName - Original file name.
+ * @param {Config} config - Configuration object.
+ * @returns {string} The formatted file name.
+ */
 export function formatFileName(date, originalName, config) {
     let formatted = config.format;
 
@@ -109,7 +164,11 @@ export function formatFileName(date, originalName, config) {
     return `${formatted}${ext}`;
 }
 
-
+/**
+ * Extract a Date object from a file using EXIF data.
+ * @param {string} filePath - Path to the file.
+ * @returns {Promise<Date|null>} Date of the file, or null if not found.
+ */
 export async function getDateFromFile(filePath) {
     const exif = await exifr.parse(filePath, { reviveValues: true });
 
