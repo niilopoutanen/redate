@@ -66,7 +66,7 @@ export function createSettingsWindow() {
     settingsWindow = new BrowserWindow({
         width: 700,
         height: 400,
-        minWidth: 350,
+        minWidth: 400,
         minHeight: 300,
         autoHideMenuBar: true,
         titleBarStyle: "hidden",

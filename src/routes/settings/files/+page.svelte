@@ -15,6 +15,16 @@
     </div>
 </div>
 
+<div class="container">
+    <div class="control">
+        <p class="label">Action on duplicate file names</p>
+        <select class="input" >
+            <option value="rename">Add index</option>
+            <option value="copy">Overwrite</option>
+        </select>
+    </div>
+</div>
+
 <p class="label">Date format:</p>
 
 <div class="container">

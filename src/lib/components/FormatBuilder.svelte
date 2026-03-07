@@ -77,6 +77,7 @@
                 display: flex;
                 flex-direction: column;
                 cursor: pointer;
+                transition: background-color 0.2s ease;
                 p {
                     margin: 0;
                 }
@@ -90,7 +91,7 @@
                 }
 
                 &:hover{
-                    background-color: $layer-2;
+                    background-color: $layer-3;
                 }
             }
         }

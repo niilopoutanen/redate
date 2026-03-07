@@ -1,6 +1,7 @@
 <script>
     import { onMount } from "svelte";
     import { guiConfig, updateGuiConfig } from "$lib/state.svelte.js";
+
 </script>
 
 <h1>Settings</h1>
