@@ -1,10 +1,8 @@
 import { BrowserWindow, app, ipcMain, dialog, nativeTheme } from 'electron';
 import path from 'path';
-//import liquidGlass from "electron-liquid-glass";
 import Store from "electron-store";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import "./ipc.js";
 
 const dev = !app.isPackaged;
 export let dropWindow: BrowserWindow;
@@ -17,6 +15,9 @@ export const store = new Store({
         }
     }
 });
+
+import "./ipc.js";
+
 declare global {
     interface Window {
         electron: any;
@@ -48,13 +49,6 @@ export function createDropWindow() {
         },
     })
 
-    // const options = {
-    //     tintColor: "#44000010",
-    //     cornerRadius: 25
-    // };
-
-
-    //liquidGlass.addView(dropWindow.getNativeWindowHandle(), options);
     if (dev) {
         dropWindow.loadURL("http://localhost:5173/drop");
         dropWindow.webContents.openDevTools({ mode: "detach" });

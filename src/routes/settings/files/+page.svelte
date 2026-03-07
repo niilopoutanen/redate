@@ -1,5 +1,6 @@
 <script>
     import { config } from "$lib/state.svelte.js";
+    import FormatBuilder from "$lib/components/FormatBuilder.svelte";
 </script>
 
 <h1>File handling</h1>
@@ -12,4 +13,9 @@
             <option value="copytofolder">Copy to subfolder</option>
         </select>
     </div>
+</div>
+
+<div class="container">
+    <p class="label">Date format: </p>
+    <FormatBuilder/>
 </div>
