@@ -1,7 +1,7 @@
 import { BrowserWindow, app, ipcMain, dialog, nativeTheme } from 'electron';
 import path from 'path';
 //import liquidGlass from "electron-liquid-glass";
-
+import Store from "electron-store";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import redate from "redate-cli";
@@ -10,7 +10,14 @@ import { getConfig, setConfig } from "redate-cli/config";
 const dev = !app.isPackaged;
 let dropWindow: BrowserWindow;
 let settingsWindow: BrowserWindow;
-
+const store = new Store({
+    defaults: {
+        guiConfig: {
+            confirmProcessing: true,
+            quitWhenDone: false
+        }
+    }
+});
 declare global {
     interface Window {
         electron: any;
@@ -35,6 +42,7 @@ function createDropWindow() {
         frame: false,
         transparent: true,
         title: "ReDate",
+        icon: path.join(dirName(), '/icon.png'),
         webPreferences: {
             nodeIntegration: true,
             preload: getPreloadPath()
@@ -71,6 +79,7 @@ function createSettingsWindow() {
         titleBarStyle: "hidden",
         backgroundMaterial: "mica",
         title: "ReDate Settings",
+        icon: path.join(dirName(), '/icon.png'),
         webPreferences: {
             nodeIntegration: true,
             preload: getPreloadPath()
@@ -137,6 +146,14 @@ ipcMain.on('minimize', (event) => {
 });
 ipcMain.on('settings', (event) => {
     createSettingsWindow();
+});
+ipcMain.handle("gui-config:get", () => {
+    return store.get("guiConfig");
+});
+
+ipcMain.handle("gui-config:set", (_, config) => {
+    console.log("Saving GUI config: ", config);
+    store.set("guiConfig", config);
 });
 
 

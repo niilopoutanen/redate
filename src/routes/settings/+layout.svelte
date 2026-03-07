@@ -1,5 +1,5 @@
 <script>
-    import { config } from "$lib/state.svelte.js";
+    import { config, guiConfig } from "$lib/state.svelte.js";
     import { onMount } from "svelte";
     import { page } from "$app/stores";
     import drive from "$lib/vector/drive.svg";
@@ -7,6 +7,7 @@
     import menu from "$lib/vector/menu.svg";
     import close from "$lib/vector/close.svg";
     import dash from "$lib/vector/dash.svg";
+    import icon from "$lib/assets/icon.png";
 
     import "$lib/styles/settings.scss";
     let { children } = $props();
@@ -15,21 +16,28 @@
         const loaded = await window.electron.getConfig();
         config.fileHandling = loaded.fileHandling;
         config.format = loaded.format;
+
+        const saved = await window.electron.getGuiConfig();
+        console.log("Loaded GUI config to frontend: ", saved);
+        if (saved) {
+            guiConfig.confirmProcessing = saved.confirmProcessing;
+            guiConfig.quitWhenDone = saved.quitWhenDone;
+        }
     });
 </script>
 
 <main>
     <section class="sidebar">
         <div class="drag">
-            <img class="icon" src="" />
+            <img class="icon" src={icon} alt="ReDate"/>
             <h1>ReDate</h1>
         </div>
         <a class="item" href="/settings" class:active={$page.url.pathname === "/settings"}>
-            <img class="icon" src={gear} />
+            <img class="icon" src={gear} alt="General settings"/>
             <p>General</p>
         </a>
         <a class="item" href="/settings/files" class:active={$page.url.pathname === "/settings/files"}>
-            <img class="icon" src={drive} />
+            <img class="icon" src={drive} alt="File handling settings"/>
             <p>File handling</p>
         </a>
     </section>
@@ -68,17 +76,17 @@
             box-sizing: border-box;
             transition: min-width 0.2s ease;
 
-            @media (max-width: 450px){
+            @media (max-width: 450px) {
                 min-width: 70px;
                 width: 70px;
 
-                .drag h1{
+                .drag h1 {
                     display: none;
                 }
-                .item{
+                .item {
                     width: 100%;
                     justify-content: center;
-                    p{
+                    p {
                         display: none;
                     }
                 }
@@ -88,12 +96,13 @@
                 -webkit-app-region: drag;
                 display: flex;
                 align-items: center;
-                padding-left: 10px;
-                min-height: 50px;
+                padding-left: 5px;
                 gap: 10px;
+                margin-top: 5px;
+                margin-bottom: 20px;
                 img.icon {
-                    width: 30px;
-                    height: 30px;
+                    width: 50px;
+                    height: 50px;
                     background-color: $layer-2-solid;
                     border-radius: 10px;
                 }
@@ -177,7 +186,7 @@
                 flex-grow: 1;
                 display: flex;
                 flex-direction: column;
-                padding: 10px;
+                padding: 15px;
                 padding-top: $titlebar-height + 10px;
                 overflow-y: auto;
 

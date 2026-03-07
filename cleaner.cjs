@@ -7,7 +7,11 @@ function renameFiles() {
         fs.renameSync(preloadFile, preloadFile.replace(".js", ".cjs"));
     }
 
-    console.log("Renamed files to .cjs");
+    const iconFile = __dirname + "/src/lib/assets/icon.png";
+
+    if(fs.existsSync(iconFile)){
+        fs.copyFileSync(iconFile, __dirname + "/build/icon.png");
+    }
 }
 
 renameFiles();

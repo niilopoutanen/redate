@@ -18,7 +18,8 @@ contextBridge.exposeInMainWorld('electron', {
             callback(result)
         ),
 
-
+    getGuiConfig: () => ipcRenderer.invoke("gui-config:get"),
+    setGuiConfig: (config) => ipcRenderer.invoke("gui-config:set", config),
 
     getConfig: () => ipcRenderer.invoke('get-config'),
     updateConfig: (newConfig) => ipcRenderer.send('update-config', newConfig),

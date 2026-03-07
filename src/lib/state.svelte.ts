@@ -22,3 +22,12 @@ export const guiConfig = $state({
     confirmProcessing: true,
     quitWhenDone: false,
 });
+
+export function updateGuiConfig(values) {
+    Object.assign(guiConfig, values);
+
+    window.electron.setGuiConfig({
+        confirmProcessing: guiConfig.confirmProcessing,
+        quitWhenDone: guiConfig.quitWhenDone
+    });
+}

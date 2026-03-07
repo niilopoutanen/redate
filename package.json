@@ -47,6 +47,7 @@
     "wait-on": "^8.0.0"
   },
   "dependencies": {
+    "electron-store": "^11.0.2",
     "redate-cli": "^0.3.1"
   }
 }
