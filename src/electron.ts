@@ -4,13 +4,12 @@ import path from 'path';
 import Store from "electron-store";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import redate from "redate-cli";
-import { getConfig, setConfig } from "redate-cli/config";
+import "./ipc.js";
 
 const dev = !app.isPackaged;
-let dropWindow: BrowserWindow;
-let settingsWindow: BrowserWindow;
-const store = new Store({
+export let dropWindow: BrowserWindow;
+export let settingsWindow: BrowserWindow;
+export const store = new Store({
     defaults: {
         guiConfig: {
             confirmProcessing: true,
@@ -24,7 +23,7 @@ declare global {
     }
 }
 
-function createDropWindow() {
+export function createDropWindow() {
     if (dropWindow && !dropWindow.isDestroyed()) {
         dropWindow.focus();
         return;
@@ -45,7 +44,7 @@ function createDropWindow() {
         icon: path.join(dirName(), '/icon.png'),
         webPreferences: {
             nodeIntegration: true,
-            preload: getPreloadPath()
+            preload: path.join(dirName() + "/preload.cjs")
         },
     })
 
@@ -69,7 +68,7 @@ function createDropWindow() {
     dropWindow.show();
 }
 
-function createSettingsWindow() {
+export function createSettingsWindow() {
     settingsWindow = new BrowserWindow({
         width: 700,
         height: 400,
@@ -82,7 +81,7 @@ function createSettingsWindow() {
         icon: path.join(dirName(), '/icon.png'),
         webPreferences: {
             nodeIntegration: true,
-            preload: getPreloadPath()
+            preload: path.join(dirName() + "/preload.cjs")
         },
     })
     if (dev) {
@@ -106,115 +105,6 @@ app.whenReady().then(() => {
 app.on('window-all-closed', () => {
     app.quit();
 });
-ipcMain.on('close-window', (_event, windowType: 'drop' | 'settings') => {
-    switch (windowType) {
-        case 'drop':
-            if (dropWindow && !dropWindow.isDestroyed()) {
-                dropWindow.close();
-            }
-            break;
-        case 'settings':
-            if (settingsWindow && !settingsWindow.isDestroyed()) {
-                settingsWindow.close();
-            }
-            break;
-    }
-});
-
-ipcMain.on('minimize-window', (_event, windowType: 'drop' | 'settings') => {
-    switch (windowType) {
-        case 'drop':
-            if (dropWindow && !dropWindow.isDestroyed()) {
-                dropWindow.minimize();
-            }
-            break;
-        case 'settings':
-            if (settingsWindow && !settingsWindow.isDestroyed()) {
-                settingsWindow.minimize();
-            }
-            break;
-    }
-});
-ipcMain.on('close', (event) => {
-    app.quit();
-});
-ipcMain.on('minimize', (event) => {
-    const window = BrowserWindow.getFocusedWindow();
-    if (window) {
-        window.minimize();
-    }
-});
-ipcMain.on('settings', (event) => {
-    createSettingsWindow();
-});
-ipcMain.handle("gui-config:get", () => {
-    return store.get("guiConfig");
-});
-
-ipcMain.handle("gui-config:set", (_, config) => {
-    console.log("Saving GUI config: ", config);
-    store.set("guiConfig", config);
-});
-
-
-ipcMain.handle('browse', async (_event) => {
-    const result = await dialog.showOpenDialog({
-        properties: ['openFile', 'multiSelections']
-    });
-
-    if (result.canceled) {
-        return [];
-    }
-
-    return result.filePaths;
-});
-
-ipcMain.handle('get-config', () => {
-    return getConfig();
-});
-
-ipcMain.on('start-processing', async (event, files) => {
-    const startTime = Date.now();
-
-    try {
-        const result = await redate(files, getConfig());
-
-        const elapsed = Date.now() - startTime;
-        if (elapsed < 1000) {
-            await new Promise(resolve => setTimeout(resolve, 1000 - elapsed));
-        }
-
-        event.sender.send('processing-complete', {
-            success: true,
-            result: result
-        });
-
-    } catch (err) {
-        const elapsed = Date.now() - startTime;
-        if (elapsed < 1000) {
-            await new Promise(resolve => setTimeout(resolve, 1000 - elapsed));
-        }
-
-        event.sender.send('processing-complete', {
-            success: false,
-            result: {
-                errors: [err.message]
-            }
-        });
-    }
-});
-
-ipcMain.on('update-value', (event, { key, value }) => {
-    const config = getConfig();
-    config[key] = value;
-    setConfig(config);
-});
-
-
-function getPreloadPath(): string {
-    const filePath = path.join(dirName() + "/preload.cjs");
-    return filePath;
-}
 
 function dirName() {
     const __filename = fileURLToPath(import.meta.url);
