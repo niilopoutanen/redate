@@ -38,7 +38,7 @@
         </a>
         <a class="item" href="/settings/files" class:active={$page.url.pathname === "/settings/files"}>
             <img class="icon" src={drive} alt="File handling settings" />
-            <p>File handling</p>
+            <p>Rename format</p>
         </a>
     </section>
     <section class="content">

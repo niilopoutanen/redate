@@ -3,30 +3,6 @@
     import FormatBuilder from "$lib/components/FormatBuilder.svelte";
 </script>
 
-<h1>File handling</h1>
-<div class="container">
-    <div class="control">
-        <p class="label">File handling method:</p>
-        <select class="input" bind:value={config.fileHandling}>
-            <option value="rename">Rename</option>
-            <option value="copy">Copy</option>
-            <option value="copytofolder">Copy to subfolder</option>
-        </select>
-    </div>
-</div>
+<h1>Rename format</h1>
 
-<div class="container">
-    <div class="control">
-        <p class="label">Action on duplicate file names</p>
-        <select class="input" >
-            <option value="rename">Add index</option>
-            <option value="copy">Overwrite</option>
-        </select>
-    </div>
-</div>
-
-<p class="label">Date format:</p>
-
-<div class="container">
-    <FormatBuilder />
-</div>
+<FormatBuilder />

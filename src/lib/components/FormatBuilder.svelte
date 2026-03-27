@@ -1,5 +1,7 @@
 <script>
     import { TOKENS } from "redate-cli/defaults";
+    import { config } from "$lib/state.svelte.js";
+    import { formatFileName } from "redate-cli";
     let formatInput = null;
     const now = new Date();
     let previewText = "";
@@ -27,28 +29,30 @@
 
         previewText = value + ".jpg";
     }
+    function parse(value) {
+        Object.entries(TOKENS).forEach(([key, token]) => {
+            const regex = new RegExp(`\\{${key}\\}`, "g");
+            value = value.replace(regex, token.value(now));
+        });
+
+        return value + ".jpg";
+    }
 </script>
 
 <div class="formatbuilder">
+    <p class="label">Current format:</p>
+    <div class="current input">
+        <p class="parsed">{formatFileName(now, config.format, config)}</p>
+        <p class="raw">{config.format}</p>
+    </div>
     <p class="label">Available blocks:</p>
-    <div class="available">
+    <div class="available container">
         {#each Object.entries(TOKENS) as [key, token]}
             <button class="block input" on:click={() => insertToken(key)}>
                 <p class="value">{token.value(now)}</p>
                 <p class="desc">{token.desc}</p>
             </button>
         {/each}
-    </div>
-
-    <p class="label">Preview:</p>
-    <div class="preview input" class:empty={previewText == ""}>
-        <p>
-            {#if previewText}
-                {previewText}
-            {:else}
-                Start adding blocks
-            {/if}
-        </p>
     </div>
 
     <div class="controls">
@@ -71,6 +75,7 @@
 
         .available {
             display: flex;
+            flex-direction: row;
             gap: 10px;
             flex-wrap: wrap;
             button.block {
@@ -90,15 +95,15 @@
                     font-size: 12px;
                 }
 
-                &:hover{
+                &:hover {
                     background-color: $layer-3;
                 }
             }
         }
-        .preview{
+        .preview {
             font-size: 13px;
 
-            &.empty{
+            &.empty {
                 color: $text-secondary;
             }
         }
