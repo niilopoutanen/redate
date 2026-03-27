@@ -1,10 +1,12 @@
 <script>
     import { TOKENS } from "redate-cli/defaults";
     import { config } from "$lib/state.svelte.js";
-    import { formatFileName } from "redate-cli";
+    import { onMount } from "svelte";
     let formatInput = null;
     const now = new Date();
-    let previewText = "";
+    
+    let currentFormat = $state("");
+    let currentFormatPreview = $state("");
 
     function insertToken(tokenKey) {
         const token = `{${tokenKey}}`; // wrap token
@@ -27,38 +29,44 @@
             value = value.replace(regex, token.value(now));
         });
 
-        previewText = value + ".jpg";
+        currentFormatPreview = value + ".jpg";
     }
-    function parse(value) {
-        Object.entries(TOKENS).forEach(([key, token]) => {
-            const regex = new RegExp(`\\{${key}\\}`, "g");
-            value = value.replace(regex, token.value(now));
-        });
+    function parse(format) {
+        const sortedTokens = Object.keys(TOKENS).sort((a, b) => b.length - a.length);
 
-        return value + ".jpg";
+        for (const key of sortedTokens) {
+            format = format.replaceAll(key, TOKENS[key].value(now));
+        }
+
+        return format + ".jpg";
     }
+
+    
+
+    onMount(() => {
+        currentFormat = "{yyyy}-{mm}-{dd} {hh}-{min}-{ss}";
+        formatInput.value = currentFormat;
+        updatePreview();
+    });
 </script>
 
 <div class="formatbuilder">
     <p class="label">Current format:</p>
-    <div class="current input">
-        <p class="parsed">{formatFileName(now, config.format, config)}</p>
-        <p class="raw">{config.format}</p>
+    <p class="current nomargin">{currentFormatPreview}</p>
+
+    <div class="controls">
+        <input type="text" class="input" bind:this={formatInput} oninput={updatePreview} placeholder="Edit format here" />
+        <button class="save input">Save</button>
+        <button class="input">Reset</button>
     </div>
     <p class="label">Available blocks:</p>
     <div class="available container">
         {#each Object.entries(TOKENS) as [key, token]}
-            <button class="block input" on:click={() => insertToken(key)}>
+            <button class="block input" onclick={() => insertToken(key)}>
                 <p class="value">{token.value(now)}</p>
                 <p class="desc">{token.desc}</p>
             </button>
         {/each}
-    </div>
-
-    <div class="controls">
-        <input type="text" class="input" bind:this={formatInput} on:input={updatePreview} placeholder="Edit format here" />
-        <button class="save input">Save</button>
-        <button class="input">Reset</button>
     </div>
 </div>
 
@@ -110,7 +118,11 @@
         .controls {
             display: flex;
             gap: 10px;
+            width: 100%;
 
+            input{
+                flex-grow: 1;
+            }
             button {
                 padding: 10px 15px;
                 cursor: pointer;
