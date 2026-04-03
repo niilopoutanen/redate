@@ -1,7 +1,7 @@
 export const DEFAULT_CONFIG = {
     cli: {
         format: "<yyyy>-<mm>-<dd> <hh>-<min>-<ss>",
-        fileHandling: "copy", // rename, copy, copy_in_folder
+        fileHandling: "copy", // rename, copy, copytofolder
         duplicateAction: "addindex" // addindex, overwrite, skip
     },
     gui: {

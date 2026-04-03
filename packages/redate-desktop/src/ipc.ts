@@ -92,10 +92,15 @@ ipcMain.on('start-processing', async (event, files) => {
             await new Promise(resolve => setTimeout(resolve, 1000 - elapsed));
         }
 
+        let success = true;
+        if (result.errors && result.errors.length > 0) {
+            success = false;
+        }
         event.sender.send('processing-complete', {
-            success: true,
+            success: success,
             result: result
         });
+
 
     } catch (err) {
         const elapsed = Date.now() - startTime;

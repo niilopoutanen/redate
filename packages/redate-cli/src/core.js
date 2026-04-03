@@ -48,7 +48,7 @@ const fileHandlers = {
         fs.copyFileSync(src, dest);
     },
 
-    copy_in_folder: (src, dest) => {
+    copytofolder: (src, dest) => {
         const dir = path.dirname(src);
         const targetDir = path.join(dir, "redate");
         if (!fs.existsSync(targetDir)) {
@@ -189,16 +189,17 @@ export async function getDateFromFile(filePath) {
     if (!date) {
         return null;
     };
+    return date;
 
-    const offset = exif.OffsetTimeOriginal;
+    // const offset = exif.OffsetTimeOriginal;
 
-    if (!offset) return date;
+    // if (!offset) return date;
 
-    const sign = offset[0] === '-' ? -1 : 1;
-    const [h, m] = offset.slice(1).split(':').map(Number);
-    const offsetMs = sign * (h * 60 + m) * 60_000;
+    // const sign = offset[0] === '-' ? -1 : 1;
+    // const [h, m] = offset.slice(1).split(':').map(Number);
+    // const offsetMs = sign * (h * 60 + m) * 60_000;
 
-    return new Date(date.getTime() + offsetMs);
+    // return new Date(date.getTime() + offsetMs);
 }
 
 export default redate;
