@@ -1,7 +1,17 @@
 import { ipcMain, BrowserWindow, dialog, app } from "electron";
-import { dropWindow, settingsWindow, store, createDropWindow, createSettingsWindow } from "./electron.js";
-import { getConfig, setConfig } from "redate-cli/config";
+import { dropWindow, settingsWindow, createDropWindow, createSettingsWindow } from "./electron.js";
 import redate from "redate-cli";
+import Conf from 'conf';
+import { DEFAULT_CONFIG } from 'redate-cli/defaults';
+
+
+const config = new Conf({
+    configName: "redate",
+    defaults: DEFAULT_CONFIG,
+    projectName: "ReDate",
+});
+
+
 
 ipcMain.on('close-window', (_event, windowType: 'drop' | 'settings') => {
     switch (windowType) {
@@ -44,14 +54,18 @@ ipcMain.on('minimize', (event) => {
 ipcMain.on('settings', (event) => {
     createSettingsWindow();
 });
-ipcMain.handle("gui-config:get", () => {
-    return store.get("guiConfig");
+
+ipcMain.handle("config:get", () => {
+    return config.store;
+});
+ipcMain.handle("config:get-key", (_event, target: 'cli' | 'gui', key: string) => {
+    return config.get(`${target}.${key}`);
+});
+ipcMain.handle("config:set-key", (_event, target: 'cli' | 'gui', key: string, value: any) => {
+    config.set(`${target}.${key}`, value);
 });
 
-ipcMain.handle("gui-config:set", (_, config) => {
-    console.log("Saving GUI config: ", config);
-    store.set("guiConfig", config);
-});
+
 
 
 ipcMain.handle('browse', async (_event) => {
@@ -66,9 +80,6 @@ ipcMain.handle('browse', async (_event) => {
     return result.filePaths;
 });
 
-ipcMain.handle('get-config', () => {
-    return getConfig();
-});
 
 ipcMain.on('start-processing', async (event, files) => {
     const startTime = Date.now();
@@ -100,10 +111,3 @@ ipcMain.on('start-processing', async (event, files) => {
         });
     }
 });
-
-ipcMain.on('update-value', (event, { key, value }) => {
-    const config = getConfig();
-    config[key] = value;
-    setConfig(config);
-});
-

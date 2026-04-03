@@ -1,6 +1,4 @@
 <script>
-    import { config, guiConfig } from "$lib/state.svelte.js";
-    import { onMount } from "svelte";
     import { page } from "$app/stores";
     import drive from "$lib/vector/drive.svg";
     import gear from "$lib/vector/gear.svg";
@@ -12,18 +10,6 @@
     import "$lib/styles/settings.scss";
     let { children } = $props();
 
-    onMount(async () => {
-        const loaded = await window.electron.getConfig();
-        config.fileHandling = loaded.fileHandling;
-        config.format = loaded.format;
-
-        const saved = await window.electron.getGuiConfig();
-        console.log("Loaded GUI config to frontend: ", saved);
-        if (saved) {
-            guiConfig.confirmProcessing = saved.confirmProcessing;
-            guiConfig.quitWhenDone = saved.quitWhenDone;
-        }
-    });
 </script>
 
 <main>

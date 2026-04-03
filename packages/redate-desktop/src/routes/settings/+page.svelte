@@ -1,6 +1,6 @@
 <script>
     import { onMount } from "svelte";
-    import { guiConfig, updateGuiConfig, config } from "$lib/state.svelte.js";
+    import { config } from "$lib/state.svelte.js";
 
 </script>
 
@@ -9,21 +9,21 @@
 <div class="container">
     <div class="control">
         <p class="label">Ask for confirmation before processing</p>
-        <input type="checkbox" checked={guiConfig.confirmProcessing} onchange={(e) => updateGuiConfig({ confirmProcessing: e.currentTarget.checked })} />
+        <input type="checkbox" checked={config.gui.confirmProcessing} onchange={(e) => window.electron.setConfigKey('gui', 'confirmProcessing', e.currentTarget.checked)} />
     </div>
 
     <div class="separator"></div>
 
     <div class="control">
         <p class="label">Quit automatically after processing</p>
-        <input type="checkbox" checked={guiConfig.quitWhenDone} onchange={(e) => updateGuiConfig({ quitWhenDone: e.currentTarget.checked })} />
+        <input type="checkbox" checked={config.gui.quitWhenDone} onchange={(e) => window.electron.setConfigKey('gui', 'quitWhenDone', e.currentTarget.checked)} />
     </div>
 </div>
 
 <div class="container">
     <div class="control">
         <p class="label">File handling method:</p>
-        <select class="input" bind:value={config.fileHandling}>
+        <select class="input" bind:value={config.cli.fileHandling} onchange={(e) => window.electron.setConfigKey('cli', 'fileHandling', e.currentTarget.value)}>
             <option value="rename">Rename</option>
             <option value="copy">Copy</option>
             <option value="copytofolder">Copy to subfolder</option>
@@ -34,7 +34,7 @@
 <div class="container">
     <div class="control">
         <p class="label">Action on duplicate file names</p>
-        <select class="input" bind:value={config.duplicateAction}>
+        <select class="input" bind:value={config.cli.duplicateAction} onchange={(e) => window.electron.setConfigKey('cli', 'duplicateAction', e.currentTarget.value)}>
             <option value="addindex">Add index</option>
             <option value="overwrite">Overwrite</option>
             <option value="skip">Skip</option>

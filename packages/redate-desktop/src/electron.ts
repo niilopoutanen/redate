@@ -1,22 +1,15 @@
 import { BrowserWindow, app, ipcMain, dialog, nativeTheme } from 'electron';
 import path from 'path';
-import Store from "electron-store";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+
+
 
 const dev = !app.isPackaged;
 export let dropWindow: BrowserWindow;
 export let settingsWindow: BrowserWindow;
 export let onboardingWindow: BrowserWindow;
 
-export const store = new Store({
-    defaults: {
-        guiConfig: {
-            confirmProcessing: true,
-            quitWhenDone: false
-        }
-    }
-});
 
 import "./ipc.js";
 

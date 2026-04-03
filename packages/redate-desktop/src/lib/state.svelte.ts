@@ -1,3 +1,6 @@
+import { DEFAULT_CONFIG } from "redate-cli/defaults";
+
+
 export const APP_STATES = {
     INITIAL: "initial",
     FILES_READY: "files-ready",
@@ -13,22 +16,4 @@ export const appState = $state({
     latestResult: null
 });
 
-export const config = $state({
-    fileHandling: null,
-    format: "",
-    duplicateAction: "addindex",
-});
-
-export const guiConfig = $state({
-    confirmProcessing: true,
-    quitWhenDone: false,
-});
-
-export function updateGuiConfig(values) {
-    Object.assign(guiConfig, values);
-
-    window.electron.setGuiConfig({
-        confirmProcessing: guiConfig.confirmProcessing,
-        quitWhenDone: guiConfig.quitWhenDone
-    });
-}
+export const config = $state({ ...DEFAULT_CONFIG });

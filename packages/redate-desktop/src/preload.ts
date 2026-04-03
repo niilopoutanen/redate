@@ -13,17 +13,16 @@ contextBridge.exposeInMainWorld('electron', {
     startProcessing: (files) => {
         ipcRenderer.send('start-processing', files);
     },
-    onProcessingComplete: (callback) =>
+    onProcessingComplete: (callback) => {
         ipcRenderer.on('processing-complete', (_event, result) =>
             callback(result)
-        ),
+        )
+    },
 
-    getGuiConfig: () => ipcRenderer.invoke("gui-config:get"),
-    setGuiConfig: (config) => ipcRenderer.invoke("gui-config:set", config),
 
-    getConfig: () => ipcRenderer.invoke('get-config'),
-    updateConfig: (newConfig) => ipcRenderer.send('update-config', newConfig),
-    updateValue: (key, value) => ipcRenderer.send('update-value', { key, value }),
+    getConfigKey: (target: 'cli' | 'gui', key: string) => ipcRenderer.invoke('config:get-key', target, key),
+    setConfigKey: (target: 'cli' | 'gui', key: string, value: any) => ipcRenderer.invoke('config:set-key', target, key, value),
+    getConfig: () => ipcRenderer.invoke('config:get'),
 
     getErrorCause: () => ipcRenderer.invoke('get-error-cause'),
     closeErrors: () => ipcRenderer.send('close-errors'),

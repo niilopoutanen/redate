@@ -1,7 +1,7 @@
 <script>
     import { onMount } from "svelte";
     import BottomControls from "$lib/components/BottomControls.svelte";
-    import { appState, APP_STATES, guiConfig } from "$lib/state.svelte.js";
+    import { appState, APP_STATES } from "$lib/state.svelte.js";
     import PreviewStack from "$lib/components/PreviewStack.svelte";
 
     let droparea = $state();
@@ -46,7 +46,7 @@
                     appState.files = [];
                     appState.files.push(...fileItems);
 
-                    if (guiConfig.confirmProcessing == false) {
+                    if (config.gui.confirmProcessing == false) {
                         document.startViewTransition(() => {
                             appState.status = APP_STATES.PROCESSING;
                         });
