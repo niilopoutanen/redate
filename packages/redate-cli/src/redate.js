@@ -3,7 +3,7 @@ import { Command } from "commander";
 import https from "https";
 import { execSync } from "child_process";
 import readline from "readline";
-import { getConfig, setConfig } from "./config.js";
+import { getConfig, setConfig, getConfigPath } from "./config.js";
 import { DEFAULT_CONFIG } from "./defaults.js";
 import redate from "./core.js";
 
@@ -12,7 +12,8 @@ const program = new Command();
 program
     .name("redate")
     .description("Rename images based on EXIF dates")
-    .version("0.4.1");
+    .version("0.5.2");
+
 
 program
     .command("process <paths...>")
@@ -45,10 +46,11 @@ configCommand
     });
 
 configCommand
-    .command("set <key> <value>")
-    .action((key, value) => {
-        setConfig({ [key]: value });
-        console.log(`${key} updated to ${value}`);
+    .command("edit")
+    .description("Open config file in editor")
+    .action(() => {
+        const editor = process.env.EDITOR || "notepad";
+        execSync(`${editor} "${getConfigPath()}"`, { stdio: "inherit" });
     });
 
 configCommand
@@ -97,6 +99,7 @@ program
         }
     });
 program.parse(process.argv);
+
 
 function getLatestVersionFromNpm(packageName) {
     return new Promise((resolve, reject) => {

@@ -1,6 +1,14 @@
 export const DEFAULT_CONFIG = {
-    format: "<yyyy>-<mm>-<dd> <hh>-<min>-<ss>",
-    fileHandling: "copy" // rename, copy, copy_in_folder
+    cli: {
+        format: "<yyyy>-<mm>-<dd> <hh>-<min>-<ss>",
+        fileHandling: "copy", // rename, copy, copy_in_folder
+        duplicateAction: "addindex" // addindex, overwrite, skip
+    },
+    gui: {
+        confirmProcessing: true,
+        quitWhenDone: false,
+    }
+
 };
 
 export const TOKENS = {
