@@ -181,6 +181,22 @@
                 flex-direction: column;
                 padding: 15px;
                 padding-top: $titlebar-height + 10px;
+
+                :global(.header){
+                    display: flex;
+                    flex-direction: column;
+                    margin-bottom: 30px;
+                    gap: 5px;
+                }
+
+                :global(.header h1){
+                    margin: 0;
+                }
+                :global(.header .desc){
+                    color: $text-secondary;
+                    font-size: 14px;
+                    margin: 0;
+                }
             }
 
             &::-webkit-scrollbar {

@@ -3,16 +3,16 @@ import { Command } from "commander";
 import https from "https";
 import { execSync } from "child_process";
 import readline from "readline";
-import { getConfig, setConfig, getConfigPath } from "./config.js";
 import { DEFAULT_CONFIG } from "./defaults.js";
 import redate from "./core.js";
+import { config } from "./core.js";
 
 const program = new Command();
 
 program
     .name("redate")
     .description("Rename images based on EXIF dates")
-    .version("0.5.2");
+    .version("0.6.0");
 
 
 program
@@ -36,13 +36,12 @@ const configCommand = program
 configCommand
     .command("get [key]")
     .action((key) => {
-        const config = getConfig();
         if (!key) {
-            console.log(config);
+            console.log(config.store);
             return;
         }
 
-        console.log(config[key]);
+        console.log(config.store[key]);
     });
 
 configCommand
@@ -50,7 +49,7 @@ configCommand
     .description("Open config file in editor")
     .action(() => {
         const editor = process.env.EDITOR || "notepad";
-        execSync(`${editor} "${getConfigPath()}"`, { stdio: "inherit" });
+        execSync(`${editor} "${config.path}"`, { stdio: "inherit" });
     });
 
 configCommand

@@ -1,9 +1,9 @@
 import fs from "fs";
 import path from "path";
 import exifr from "exifr";
-import { getConfig } from "./config.js";
 import { TOKENS } from "./defaults.js";
-
+import Conf from "conf";
+import { DEFAULT_CONFIG } from "./defaults.js";
 
 /**
  * @typedef {Object<string, any>} Config
@@ -31,6 +31,12 @@ import { TOKENS } from "./defaults.js";
  * @returns {Promise<Result>} The summary of the processing.
  */
 
+export const config = new Conf({
+    configName: "redate",
+    defaults: DEFAULT_CONFIG,
+    projectName: "ReDate",
+});
+
 
 /** @type {Record<string, (src: string, dest: string) => void>} */
 const fileHandlers = {
@@ -54,7 +60,6 @@ const fileHandlers = {
 
 
 export async function redate(paths) {
-    const config = getConfig();
     const result = {
         totalFiles: 0,
         processed: 0,
@@ -71,9 +76,9 @@ export async function redate(paths) {
         const stats = fs.statSync(p);
 
         if (stats.isFile()) {
-            await processFile(p, config, result);
+            await processFile(p, config.store, result);
         } else if (stats.isDirectory()) {
-            await processFiles(p, config, result);
+            await processFiles(p, config.store, result);
         }
     }
 
@@ -87,7 +92,6 @@ export async function redate(paths) {
  * @param {Result} result - Result object to update.
  */
 export async function processFiles(folderPath, config, result) {
-    if (!config) config = getConfig();
     const files = fs.readdirSync(folderPath);
 
     for (const file of files) {
@@ -135,10 +139,10 @@ function applyFileHandling(srcPath, newFileName, config) {
     const dir = path.dirname(srcPath);
     const dest = path.join(dir, newFileName);
 
-    const handler = fileHandlers[config.fileHandling];
+    const handler = fileHandlers[config.cli.fileHandling];
 
     if (!handler) {
-        throw new Error(`Unknown fileHandling: ${config.fileHandling}`);
+        throw new Error(`Unknown fileHandling: ${config.cli.fileHandling}`);
     }
 
     handler(srcPath, dest);
@@ -153,7 +157,7 @@ function applyFileHandling(srcPath, newFileName, config) {
  */
 
 export function formatFileName(date, originalName, config) {
-    let formatted = config.format;
+    let formatted = config.cli.format;
 
     const sortedTokens = Object.keys(TOKENS).sort((a, b) => b.length - a.length);
 

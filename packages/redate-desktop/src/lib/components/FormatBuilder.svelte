@@ -1,10 +1,11 @@
 <script>
     import { TOKENS } from "redate-cli/defaults";
     import { config } from "$lib/state.svelte.js";
+    import { DEFAULT_CONFIG } from "redate-cli/defaults";
     import { onMount } from "svelte";
     let formatInput = null;
     const now = new Date();
-    
+
     let currentFormat = $state("");
     let currentFormatPreview = $state("");
 
@@ -23,7 +24,6 @@
         if (!formatInput) return;
         let value = formatInput.value;
 
-        // Replace only wrapped tokens
         Object.entries(TOKENS).forEach(([key, token]) => {
             const regex = new RegExp(`\\<${key}\\>`, "g");
             value = value.replace(regex, token.value(now));
@@ -41,10 +41,19 @@
         return format + ".jpg";
     }
 
-    
+    function resetFormat() {
+        currentFormat = DEFAULT_CONFIG.cli.format;
+        window.electron.setConfigKey("cli", "format", currentFormat);
+        formatInput.value = currentFormat;
+        updatePreview();
+    }
+
+    function saveFormat() {
+        window.electron.setConfigKey("cli", "format", formatInput.value);
+    }
 
     onMount(() => {
-        currentFormat = "<yyyy>-<mm>-<dd> <hh>-<min>-<ss>";
+        currentFormat = config.cli.format;
         formatInput.value = currentFormat;
         updatePreview();
     });
@@ -56,14 +65,15 @@
 
     <div class="controls">
         <input type="text" class="input" bind:this={formatInput} oninput={updatePreview} placeholder="Edit format here" />
-        <button class="save input">Save</button>
-        <button class="input">Reset</button>
+        <button class="save input" onclick={() => saveFormat()}>Save</button>
+        <button class="input" onclick={() => resetFormat()}>Reset</button>
     </div>
     <p class="label">Available blocks:</p>
     <div class="available container">
         {#each Object.entries(TOKENS) as [key, token]}
             <button class="block input" onclick={() => insertToken(key)}>
-                <p class="value">{token.value(now)}</p>
+                <p class="value key">{key}</p>
+                <p class="value now">{token.value(now)}</p>
                 <p class="desc">{token.desc}</p>
             </button>
         {/each}
@@ -97,7 +107,15 @@
                 .value {
                     font-weight: 600;
                     font-size: 16px;
+                    transition: opacity 0.2s ease;
                 }
+
+                .value.now {
+                    opacity: 0;
+                    position: absolute; // optional if you want it to overlay smoothly
+                }
+
+
                 .desc {
                     color: $text-secondary;
                     font-size: 12px;
@@ -105,6 +123,14 @@
 
                 &:hover {
                     background-color: $layer-3;
+
+                    .value.now {
+                        opacity: 1;
+                    }
+
+                    .value.key {
+                        opacity: 0;
+                    }
                 }
             }
         }
@@ -120,7 +146,7 @@
             gap: 10px;
             width: 100%;
 
-            input{
+            input {
                 flex-grow: 1;
             }
             button {
