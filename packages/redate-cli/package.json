@@ -1,0 +1,29 @@
+{
+  "name": "redate-cli",
+  "version": "0.5.0",
+  "description": "A CLI tool for renaming images based on EXIF data.",
+  "type": "module",
+  "main": "./src/core.js",
+  "bin": {
+    "redate": "./src/redate.js"
+  },
+  "exports": {
+    ".": "./src/core.js",
+    "./config": "./src/config.js",
+    "./defaults": "./src/defaults.js"
+  },
+  "scripts": {
+    "redate": "node ./src/redate.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/niilopoutanen/redate.git"
+  },
+  "author": "Niilo Poutanen",
+  "license": "ISC",
+  "homepage": "https://github.com/niilopoutanen/redate",
+  "dependencies": {
+    "commander": "^14.0.2",
+    "exifr": "^7.1.3"
+  }
+}

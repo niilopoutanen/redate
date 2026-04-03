@@ -74,7 +74,7 @@ ipcMain.on('start-processing', async (event, files) => {
     const startTime = Date.now();
 
     try {
-        const result = await redate(files, getConfig());
+        const result = await redate(files);
 
         const elapsed = Date.now() - startTime;
         if (elapsed < 1000) {
