@@ -1,6 +1,6 @@
 <script>
     import { TOKENS } from "redate-cli/defaults";
-    import { config } from "$lib/state.svelte.js";
+    import { config, updateConfig } from "$lib/state.svelte.js";
     import { DEFAULT_CONFIG } from "redate-cli/defaults";
     import { onMount } from "svelte";
     let formatInput = null;
@@ -22,34 +22,30 @@
 
     function updatePreview() {
         if (!formatInput) return;
-        let value = formatInput.value;
-
-        Object.entries(TOKENS).forEach(([key, token]) => {
-            const regex = new RegExp(`\\<${key}\\>`, "g");
-            value = value.replace(regex, token.value(now));
-        });
-
-        currentFormatPreview = value + ".jpg";
+        currentFormatPreview = parse(formatInput.value) + ".jpg";
     }
+
     function parse(format) {
         const sortedTokens = Object.keys(TOKENS).sort((a, b) => b.length - a.length);
 
         for (const key of sortedTokens) {
-            format = format.replaceAll(key, TOKENS[key].value(now));
+            const regex = new RegExp(`<${key}>`, "g"); // use <> here as well
+            format = format.replace(regex, TOKENS[key].value(now));
         }
 
-        return format + ".jpg";
+        return format;
     }
 
     function resetFormat() {
         currentFormat = DEFAULT_CONFIG.cli.format;
-        window.electron.setConfigKey("cli", "format", currentFormat);
+
+        updateConfig("cli", "format", currentFormat);
         formatInput.value = currentFormat;
         updatePreview();
     }
 
     function saveFormat() {
-        window.electron.setConfigKey("cli", "format", formatInput.value);
+        updateConfig("cli", "format", formatInput.value);
     }
 
     onMount(() => {
@@ -57,6 +53,8 @@
         formatInput.value = currentFormat;
         updatePreview();
     });
+
+    const commonFormats = ["<yyyy>-<mm>-<dd> <hh>-<min>-<ss>", "<yyyy>.<mm>.<dd> <hh>.<min>", "<dd>-<mm>-<yyyy>", "<dd>-<mm>-<yyyy> <hh>-<min>-<ss>"];
 </script>
 
 <div class="formatbuilder">
@@ -75,6 +73,23 @@
                 <p class="value key">{key}</p>
                 <p class="value now">{token.value(now)}</p>
                 <p class="desc">{token.desc}</p>
+            </button>
+        {/each}
+    </div>
+
+    <p class="label">Common formats:</p>
+    <div class="common">
+        {#each commonFormats as format}
+            <button
+                class="block input"
+                title="Click to use this format"
+                onclick={() => {
+                    formatInput.value = format;
+                    updatePreview();
+                }}
+            >
+                <p class="value now">{parse(format)}</p>
+                <p class="value key">{format}</p>
             </button>
         {/each}
     </div>
@@ -112,9 +127,8 @@
 
                 .value.now {
                     opacity: 0;
-                    position: absolute; // optional if you want it to overlay smoothly
+                    position: absolute;
                 }
-
 
                 .desc {
                     color: $text-secondary;
@@ -155,6 +169,28 @@
                 &.save {
                     background-color: $accent;
                     border: 1px solid $accent;
+                }
+            }
+        }
+
+        .common {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 10px;
+
+            button {
+                cursor: pointer;
+                display: flex;
+                flex-direction: column;
+                .value.now{
+                    font-weight: 600;
+                    font-size: 16px;
+                }
+
+                .value.key {
+                    color: $text-secondary;
+                    font-size: 12px;
                 }
             }
         }

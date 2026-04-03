@@ -17,3 +17,13 @@ export const appState = $state({
 });
 
 export const config = $state({ ...DEFAULT_CONFIG });
+
+// @ts-ignore
+export async function updateConfig(target: 'cli' | 'gui', key, value) {
+    await window.electron.setConfigKey(target, key, value);
+
+    // @ts-ignore
+    if (!config[target]) config[target] = {};
+    // @ts-ignore
+    config[target][key] = value;
+}
