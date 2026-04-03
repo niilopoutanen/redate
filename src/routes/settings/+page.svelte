@@ -34,9 +34,10 @@
 <div class="container">
     <div class="control">
         <p class="label">Action on duplicate file names</p>
-        <select class="input" >
-            <option value="rename">Add index</option>
-            <option value="copy">Overwrite</option>
+        <select class="input" bind:value={config.duplicateAction}>
+            <option value="addindex">Add index</option>
+            <option value="overwrite">Overwrite</option>
+            <option value="skip">Skip</option>
         </select>
     </div>
 </div>

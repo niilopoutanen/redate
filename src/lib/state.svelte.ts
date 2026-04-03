@@ -16,6 +16,7 @@ export const appState = $state({
 export const config = $state({
     fileHandling: null,
     format: "",
+    duplicateAction: "addindex",
 });
 
 export const guiConfig = $state({

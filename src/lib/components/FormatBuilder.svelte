@@ -9,7 +9,7 @@
     let currentFormatPreview = $state("");
 
     function insertToken(tokenKey) {
-        const token = `{${tokenKey}}`; // wrap token
+        const token = `<${tokenKey}>`; // wrap token
         const start = formatInput.selectionStart;
         const end = formatInput.selectionEnd;
         const value = formatInput.value;
@@ -25,7 +25,7 @@
 
         // Replace only wrapped tokens
         Object.entries(TOKENS).forEach(([key, token]) => {
-            const regex = new RegExp(`\\{${key}\\}`, "g");
+            const regex = new RegExp(`\\<${key}\\>`, "g");
             value = value.replace(regex, token.value(now));
         });
 
@@ -44,7 +44,7 @@
     
 
     onMount(() => {
-        currentFormat = "{yyyy}-{mm}-{dd} {hh}-{min}-{ss}";
+        currentFormat = "<yyyy>-<mm>-<dd> <hh>-<min>-<ss>";
         formatInput.value = currentFormat;
         updatePreview();
     });
