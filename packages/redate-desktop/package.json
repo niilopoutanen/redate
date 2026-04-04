@@ -1,6 +1,6 @@
 {
   "name": "redate",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "author": "Niilo Poutanen",
   "description": "App for renaming files by exif data",
   "private": true,
@@ -35,7 +35,7 @@
     "@sveltejs/kit": "^2.53.4",
     "@sveltejs/vite-plugin-svelte": "^6.2.4",
     "concurrently": "^8.2.2",
-    "electron": "^32.0.1",
+    "electron": "32.0.1",
     "electron-builder": "^26.8.1",
     "kill-port": "^2.0.1",
     "sass-embedded": "^1.77.8",

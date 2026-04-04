@@ -39,7 +39,6 @@ export function createDropWindow() {
         title: "ReDate",
         icon: path.join(dirName(), '/icon.png'),
         webPreferences: {
-            nodeIntegration: true,
             preload: path.join(dirName() + "/preload.cjs")
         },
     })
@@ -50,11 +49,14 @@ export function createDropWindow() {
 
     }
     else {
-        dropWindow.loadFile("build/drop.html");
-
+        dropWindow.loadFile("build/drop/index.html");
     }
 
     dropWindow.show();
+
+    dropWindow.on('closed', () => {
+        app.quit();
+    });
 }
 
 export function createSettingsWindow() {
@@ -68,7 +70,6 @@ export function createSettingsWindow() {
         title: "ReDate Settings",
         icon: path.join(dirName(), '/icon.png'),
         webPreferences: {
-            nodeIntegration: true,
             preload: path.join(dirName() + "/preload.cjs")
         },
     })
@@ -77,7 +78,7 @@ export function createSettingsWindow() {
         settingsWindow.webContents.openDevTools({ mode: "detach" });
     }
     else {
-        settingsWindow.loadFile("build/settings.html");
+        settingsWindow.loadFile("build/settings/index.html");
     }
     settingsWindow.show();
 }

@@ -34,7 +34,8 @@
     {/if}
 
     {#if appState.status === APP_STATES.FILES_READY}
-        <button  title="Go back"
+        <button
+            title="Go back"
             onclick={() => {
                 changeStatus(APP_STATES.INITIAL);
                 appState.files = [];
@@ -45,7 +46,8 @@
     {/if}
 
     {#if appState.status === APP_STATES.INITIAL}
-        <button title="Select from files"
+        <button
+            title="Select from files"
             onclick={async () => {
                 const files = await window.electron.browse();
                 if (files && files.length > 0) {
@@ -65,7 +67,7 @@
     {/if}
 
     {#if appState.status === APP_STATES.PROCESSING}
-        <button onclick={stopProcessing} >
+        <button onclick={stopProcessing}>
             <p>Cancel</p>
         </button>
     {/if}
@@ -78,6 +80,17 @@
             }}
         >
             <p>Done</p>
+        </button>
+    {/if}
+
+    {#if appState.status === APP_STATES.ERROR}
+        <button
+            class="primary"
+            onclick={() => {
+                changeStatus(APP_STATES.INITIAL);
+            }}
+        >
+            <p>OK</p>
         </button>
     {/if}
 
@@ -140,7 +153,7 @@
             &:hover {
                 background-color: $layer-2;
                 transform: scale(1.05);
-                img{
+                img {
                     transform: scale(1.1);
                 }
             }

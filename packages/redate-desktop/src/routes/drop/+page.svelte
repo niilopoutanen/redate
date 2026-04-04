@@ -235,4 +235,25 @@
             transform: rotate(360deg);
         }
     }
+
+    .error{
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        gap: 5px;
+        .title{
+            margin: 0;
+        }
+        .cause {
+            margin: 0;
+            color: $text-secondary;
+            font-size: 12px;
+            text-align: center;
+            white-space: normal;
+            word-break: break-all;
+        }
+    }
 </style>

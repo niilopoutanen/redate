@@ -27,6 +27,8 @@ contextBridge.exposeInMainWorld('electron', {
     getErrorCause: () => ipcRenderer.invoke('get-error-cause'),
     closeErrors: () => ipcRenderer.send('close-errors'),
 
+    getVersion: () => ipcRenderer.invoke('get-version'),
+    
     showFilePath(file) {
         const path = webUtils.getPathForFile(file)
         return path;

@@ -19,6 +19,9 @@ ipcMain.on('close-window', (_event, windowType: 'drop' | 'settings') => {
             if (dropWindow && !dropWindow.isDestroyed()) {
                 dropWindow.close();
             }
+            if (settingsWindow && !settingsWindow.isDestroyed()) {
+                settingsWindow.close();
+            }
             break;
         case 'settings':
             if (settingsWindow && !settingsWindow.isDestroyed()) {
@@ -66,6 +69,9 @@ ipcMain.handle("config:set-key", (_event, target: 'cli' | 'gui', key: string, va
 });
 
 
+ipcMain.handle('get-version', () => {
+    return app.getVersion();
+});
 
 
 ipcMain.handle('browse', async (_event) => {

@@ -6,26 +6,42 @@
     import close from "$lib/vector/close.svg";
     import dash from "$lib/vector/dash.svg";
     import icon from "$lib/assets/icon.png";
+    import { goto } from "$app/navigation";
+    import { resolve } from "$app/paths";
+    import { onMount } from "svelte";
 
     import "$lib/styles/settings.scss";
     let { children } = $props();
+    let version = $state("");
 
+    $effect(() => {
+        console.log($page.url.pathname);
+
+    });
+
+    onMount(async () => {
+        if (typeof window === 'undefined') return '';
+        const returned = await window.electron.getVersion();
+        console.log(returned);
+        version = "v " + returned;
+    });
 </script>
 
 <main>
     <section class="sidebar">
         <div class="drag">
-            <img class="icon" src={icon} alt="ReDate" />
+            <img class="icon" src={resolve("/icon.png")} alt="ReDate" />
             <h1>ReDate</h1>
         </div>
-        <a class="item" href="/settings" class:active={$page.url.pathname === "/settings"}>
+        <a class="item" href={resolve("/settings")} class:active={$page.url.pathname == "/settings/"}>
             <img class="icon" src={gear} alt="General settings" />
             <p>General</p>
         </a>
-        <a class="item" href="/settings/files" class:active={$page.url.pathname === "/settings/files"}>
+        <a class="item" href={resolve("/settings/files")} class:active={$page.url.pathname == "/settings/files/"}>
             <img class="icon" src={drive} alt="File handling settings" />
             <p>Rename format</p>
         </a>
+        <p class="version">{version}</p>
     </section>
     <section class="content">
         <header>
@@ -109,6 +125,13 @@
                 }
             }
 
+            .version{
+                margin-top: auto;
+                color: $text-secondary;
+                margin-bottom: 0;
+                font-size: 12px;
+            }
+
             @media (max-width: 450px) {
                 min-width: 70px;
                 width: 70px;
@@ -182,17 +205,17 @@
                 padding: 15px;
                 padding-top: $titlebar-height + 10px;
 
-                :global(.header){
+                :global(.header) {
                     display: flex;
                     flex-direction: column;
                     margin-bottom: 30px;
                     gap: 5px;
                 }
 
-                :global(.header h1){
+                :global(.header h1) {
                     margin: 0;
                 }
-                :global(.header .desc){
+                :global(.header .desc) {
                     color: $text-secondary;
                     font-size: 14px;
                     margin: 0;
