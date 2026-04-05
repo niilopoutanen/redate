@@ -65,8 +65,8 @@
         droparea.addEventListener("dragleave", onDragLeave);
         droparea.addEventListener("drop", onDrop);
 
-        // cleanup if droparea changes
         return () => {
+            if(!droparea) return;
             droparea.removeEventListener("dragover", onDragOver);
             droparea.removeEventListener("dragleave", onDragLeave);
             droparea.removeEventListener("drop", onDrop);

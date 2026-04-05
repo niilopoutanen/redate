@@ -13,33 +13,26 @@
 
     function isFile(pathname) {
         if (typeof pathname !== "string") return false;
+
         const name = pathname.split(/[/\\]/).pop();
-        return name.includes(".");
+        if (!name) return false;
+
+        const lastDot = name.lastIndexOf(".");
+        return lastDot > 0 && lastDot < name.length - 1;
     }
 
-    // Helper to pick the right image
-    let previewImage = $derived.by(() =>
-        fileCount == 1 && folderCount == 0
-            ? onefile
-            : fileCount == 2 && folderCount == 0
-              ? twofiles
-              : fileCount > 2 && folderCount == 0
-                ? manyfiles
-                : fileCount > 0 && folderCount > 0
-                  ? foldersandfiles
-                  : fileCount == 0 && folderCount > 1
-                    ? manyfolders
-                    : fileCount == 0 && folderCount > 0
-                      ? folder
-                      : null,
-    );
+    let previewFiles = $derived.by(() => $state.snapshot(appState.files).slice(0, 3));
 </script>
 
 <div class="info">
     <div class="preview-stack">
-        {#if previewImage}
-            <img src={previewImage} alt="" />
-        {/if}
+        {#each previewFiles as file, i}
+            {#if isFile(file)}
+                <img src={"thum:///" + file} alt="" class={"thumb thumb-" + i} />
+            {:else}
+                <img src={folder} alt="" />
+            {/if}
+        {/each}
     </div>
     <p class="details">
         {#if fileCount && folderCount}
@@ -67,15 +60,34 @@
 
             img {
                 position: absolute;
-                left: 50%;
                 top: 50%;
+                left: 50%;
                 transform: translate(-50%, -50%);
-                max-width: 100%;
-                max-height: 100%;
-                object-fit: contain;
+                height: 100%;
 
-                width: 150px;
-                height: 120px;
+                object-fit: cover;
+                border-radius: 4px;
+                user-select: none;
+                pointer-events: none;
+
+                &.thumb {
+                    border: 1px solid #ffffff1b;
+                    width: 60%;
+                    height: 70%;
+                }
+
+                &:nth-child(1) {
+                    transform: translate(-50%, -50%);
+                    z-index: 4;
+                }
+                &:nth-child(2) {
+                    transform: translate(-40%, -60%) rotate(-5deg);
+                    z-index: 3;
+                }
+                &:nth-child(3) {
+                    transform: translate(-50%, -65%) rotate(5deg);
+                    z-index: 2;
+                }
             }
         }
 

@@ -31,6 +31,9 @@ contextBridge.exposeInMainWorld('electron', {
     isMac: () => ipcRenderer.invoke('is-mac'),
     
     showFilePath(file) {
+        if (file === null) {
+            return null;
+        }
         const path = webUtils.getPathForFile(file)
         return path;
     }

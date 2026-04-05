@@ -1,4 +1,4 @@
-import { BrowserWindow, app, ipcMain, dialog, nativeTheme } from 'electron';
+import { BrowserWindow, app, ipcMain, dialog, nativeTheme, protocol, nativeImage } from 'electron';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -90,6 +90,19 @@ app.whenReady().then(() => {
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) createDropWindow()
     })
+
+    protocol.handle("thum", async (request) => {
+        let url = request.url.slice("thum:///".length);
+        const image = await nativeImage.createThumbnailFromPath(url, {
+            width: 200,
+            height: 200,
+        });
+        const png = image.toPNG();
+        return new Response(new Uint8Array(png), {
+            headers: { "content-type": "image/png" },
+        });
+    });
+
 })
 
 app.on('window-all-closed', () => {
