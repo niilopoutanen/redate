@@ -19,6 +19,7 @@
     onMount(async () => {
         const loaded = await window.electron.getConfig();
         Object.assign(config, loaded);
+        
     })
 </script>
 

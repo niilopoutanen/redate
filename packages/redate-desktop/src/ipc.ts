@@ -2,6 +2,7 @@ import { ipcMain, BrowserWindow, dialog, app } from "electron";
 import { dropWindow, settingsWindow, createDropWindow, createSettingsWindow } from "./electron.js";
 import redate from "redate-cli";
 import Conf from 'conf';
+import os from 'os';
 import { DEFAULT_CONFIG } from 'redate-cli/defaults';
 
 
@@ -72,7 +73,9 @@ ipcMain.handle("config:set-key", (_event, target: 'cli' | 'gui', key: string, va
 ipcMain.handle('get-version', () => {
     return app.getVersion();
 });
-
+ipcMain.handle('is-mac', () => {
+    return os.platform() === 'darwin';
+});
 
 ipcMain.handle('browse', async (_event) => {
     const result = await dialog.showOpenDialog({

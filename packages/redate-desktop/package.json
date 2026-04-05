@@ -21,7 +21,7 @@
     "asar": true,
     "mac": {
       "target": "dmg",
-      "icon": "static/favicon.icns"
+      "icon": "static/icon.icon"
     },
     "win": {
       "target": "nsis",
@@ -31,6 +31,7 @@
   },
   "devDependencies": {
     "@electron/packager": "^18.3.4",
+    "@rollup/rollup-darwin-arm64": "^4.60.1",
     "@sveltejs/adapter-static": "^3.0.4",
     "@sveltejs/kit": "^2.53.4",
     "@sveltejs/vite-plugin-svelte": "^6.2.4",
@@ -48,6 +49,7 @@
   },
   "dependencies": {
     "conf": "^15.1.0",
+    "dmg-license": "^1.0.11",
     "electron-store": "^11.0.2",
     "ogl": "^1.0.11",
     "redate-cli": "*"

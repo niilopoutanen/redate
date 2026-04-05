@@ -16,11 +16,15 @@
 
     $effect(() => {
         console.log($page.url.pathname);
+    });
 
+    let isMac = $derived(() => {
+        if (typeof window === "undefined") return false;
+        return window.electron.isMac();
     });
 
     onMount(async () => {
-        if (typeof window === 'undefined') return '';
+        if (typeof window === "undefined") return "";
         const returned = await window.electron.getVersion();
         console.log(returned);
         version = "v " + returned;
@@ -28,7 +32,7 @@
 </script>
 
 <main>
-    <section class="sidebar">
+    <section class="sidebar" class:mac={isMac}>
         <div class="drag">
             <img class="icon" src={resolve("/icon.png")} alt="ReDate" />
             <h1>ReDate</h1>
@@ -45,10 +49,12 @@
     </section>
     <section class="content">
         <header>
-            <div class="controls-windows">
-                <button onclick={() => window.electron.minimize("settings")}> <img src={dash} alt="Minimize" /> </button>
-                <button onclick={() => window.electron.close("settings")}> <img src={close} alt="Close" /> </button>
-            </div>
+            {#if !isMac}
+                <div class="controls-windows">
+                    <button onclick={() => window.electron.minimize("settings")}> <img src={dash} alt="Minimize" /> </button>
+                    <button onclick={() => window.electron.close("settings")}> <img src={close} alt="Close" /> </button>
+                </div>
+            {/if}
         </header>
         <div class="page">
             {@render children?.()}
@@ -79,6 +85,9 @@
             box-sizing: border-box;
             transition: min-width 0.2s ease;
 
+            &.mac{
+                padding-top: 30px;
+            }
             .drag {
                 width: 100%;
                 -webkit-app-region: drag;
@@ -125,7 +134,7 @@
                 }
             }
 
-            .version{
+            .version {
                 margin-top: auto;
                 color: $text-secondary;
                 margin-bottom: 0;

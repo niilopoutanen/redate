@@ -8,5 +8,9 @@
     "cli": "npm run redate -w redate-cli",
     "gui": "npm run electron -w redate",
     "package": "npm run package -w redate"
+  },
+  "devDependencies": {
+    "sass-embedded": "^1.99.0",
+    "sass-embedded-darwin-arm64": "^1.99.0"
   }
 }
