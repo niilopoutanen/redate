@@ -74,6 +74,7 @@ ipcMain.handle('get-version', () => {
     return app.getVersion();
 });
 ipcMain.handle('is-mac', () => {
+    console.log("Checking platform: ", os.platform());
     return os.platform() === 'darwin';
 });
 

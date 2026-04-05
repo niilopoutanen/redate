@@ -14,20 +14,17 @@
     let { children } = $props();
     let version = $state("");
 
-    $effect(() => {
-        console.log($page.url.pathname);
-    });
 
-    let isMac = $derived(() => {
-        if (typeof window === "undefined") return false;
-        return window.electron.isMac();
-    });
+    let isMac = $state(false);
 
     onMount(async () => {
-        if (typeof window === "undefined") return "";
-        const returned = await window.electron.getVersion();
-        console.log(returned);
-        version = "v " + returned;
+        if (typeof window === "undefined") return;
+        version = "v " + await window.electron.getVersion();;
+
+        const is = await window.electron.isMac();
+        console.log("Running on macos: ", is);
+        isMac = is;
+
     });
 </script>
 
