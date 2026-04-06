@@ -21,10 +21,7 @@
         if (typeof window === "undefined") return;
         version = "v " + await window.electron.getVersion();;
 
-        const is = await window.electron.isMac();
-        console.log("Running on macos: ", is);
-        isMac = is;
-
+        isMac = await window.electron.isMac();
     });
 </script>
 

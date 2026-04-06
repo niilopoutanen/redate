@@ -42,16 +42,13 @@
                     .filter(Boolean); // remove nulls
 
                 if (fileItems.length > 0) {
-                    console.log("Files dropped:", fileItems);
-                    appState.files = [];
-                    appState.files.push(...fileItems);
+                    window.electron.setFiles(fileItems);
 
                     if (config.gui.confirmProcessing == false) {
                         document.startViewTransition(() => {
                             appState.status = APP_STATES.PROCESSING;
                         });
-                        const filesToProcess = $state.snapshot(appState.files);
-                        window.electron.startProcessing(filesToProcess);
+                        window.electron.startProcessing();
                     } else {
                         document.startViewTransition(() => {
                             appState.status = APP_STATES.FILES_READY;
@@ -66,7 +63,7 @@
         droparea.addEventListener("drop", onDrop);
 
         return () => {
-            if(!droparea) return;
+            if (!droparea) return;
             droparea.removeEventListener("dragover", onDragOver);
             droparea.removeEventListener("dragleave", onDragLeave);
             droparea.removeEventListener("drop", onDrop);
@@ -236,7 +233,7 @@
         }
     }
 
-    .error{
+    .error {
         width: 100%;
         display: flex;
         flex-direction: column;
@@ -244,7 +241,7 @@
         overflow-y: scroll;
         overflow-x: hidden;
         gap: 5px;
-        .title{
+        .title {
             margin: 0;
         }
         .cause {

@@ -10,7 +10,6 @@ export const APP_STATES = {
 } as const;
 
 export const appState = $state({
-    files: [],
     processing: false,
     status: "initial",
     latestResult: null

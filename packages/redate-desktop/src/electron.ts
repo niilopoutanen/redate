@@ -8,7 +8,7 @@ import { dirname } from 'path';
 const dev = !app.isPackaged;
 export let dropWindow: BrowserWindow;
 export let settingsWindow: BrowserWindow;
-export let onboardingWindow: BrowserWindow;
+export let previewWindow: BrowserWindow;
 
 
 import "./ipc.js";
@@ -53,10 +53,33 @@ export function createDropWindow() {
     }
 
     dropWindow.show();
-
     dropWindow.on('closed', () => {
         app.quit();
     });
+}
+
+export function createPreviewWindow() {
+    previewWindow = new BrowserWindow({
+        width: 700,
+        height: 400,
+        autoHideMenuBar: true,
+        titleBarStyle: "hidden",
+        transparent: true,
+        frame: false,
+        title: "ReDate Preview",
+        icon: path.join(dirName(), '/icon.png'),
+        webPreferences: {
+            preload: path.join(dirName() + "/preload.cjs")
+        },
+    })
+    if (dev) {
+        previewWindow.loadURL("http://localhost:5173/preview");
+        previewWindow.webContents.openDevTools({ mode: "detach" });
+    }
+    else {
+        previewWindow.loadFile("build/preview/index.html");
+    }
+    previewWindow.show();
 }
 
 export function createSettingsWindow() {

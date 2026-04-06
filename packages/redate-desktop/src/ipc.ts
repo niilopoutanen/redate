@@ -1,5 +1,5 @@
 import { ipcMain, BrowserWindow, dialog, app } from "electron";
-import { dropWindow, settingsWindow, createDropWindow, createSettingsWindow } from "./electron.js";
+import { dropWindow, settingsWindow, previewWindow, createDropWindow, createPreviewWindow, createSettingsWindow } from "./electron.js";
 import redate from "redate-cli";
 import Conf from 'conf';
 import os from 'os';
@@ -12,9 +12,23 @@ const config = new Conf({
     projectName: "ReDate",
 });
 
+let filesState = [];
 
 
-ipcMain.on('close-window', (_event, windowType: 'drop' | 'settings') => {
+ipcMain.on('files:set', (_event, files) => {
+    filesState = files;
+    console.log("Files state updated: ", filesState);
+    BrowserWindow.getAllWindows().forEach((win) => {
+        win.webContents.send('files:updated', filesState);
+    });
+});
+
+
+ipcMain.handle('files:get', () => {
+    return filesState;
+});
+
+ipcMain.on('close-window', (_event, windowType: 'drop' | 'settings' | 'preview') => {
     switch (windowType) {
         case 'drop':
             if (dropWindow && !dropWindow.isDestroyed()) {
@@ -29,10 +43,17 @@ ipcMain.on('close-window', (_event, windowType: 'drop' | 'settings') => {
                 settingsWindow.close();
             }
             break;
+
+        case 'preview':
+            if (previewWindow && !previewWindow.isDestroyed()) {
+                previewWindow.close();
+            }
+            break;
+
     }
 });
 
-ipcMain.on('minimize-window', (_event, windowType: 'drop' | 'settings') => {
+ipcMain.on('minimize-window', (_event, windowType: 'drop' | 'settings' | 'preview') => {
     switch (windowType) {
         case 'drop':
             if (dropWindow && !dropWindow.isDestroyed()) {
@@ -44,6 +65,12 @@ ipcMain.on('minimize-window', (_event, windowType: 'drop' | 'settings') => {
                 settingsWindow.minimize();
             }
             break;
+        case 'preview':
+            if (previewWindow && !previewWindow.isDestroyed()) {
+                previewWindow.minimize();
+            }
+            break;
+
     }
 });
 ipcMain.on('close', (event) => {
@@ -57,6 +84,9 @@ ipcMain.on('minimize', (event) => {
 });
 ipcMain.on('settings', (event) => {
     createSettingsWindow();
+});
+ipcMain.on('preview', (event) => {
+    createPreviewWindow();
 });
 
 ipcMain.handle("config:get", () => {
@@ -74,7 +104,6 @@ ipcMain.handle('get-version', () => {
     return app.getVersion();
 });
 ipcMain.handle('is-mac', () => {
-    console.log("Checking platform: ", os.platform());
     return os.platform() === 'darwin';
 });
 
@@ -91,11 +120,11 @@ ipcMain.handle('browse', async (_event) => {
 });
 
 
-ipcMain.on('start-processing', async (event, files) => {
+ipcMain.on('start-processing', async (event) => {
     const startTime = Date.now();
 
     try {
-        const result = await redate(files);
+        const result = await redate(filesState);
 
         const elapsed = Date.now() - startTime;
         if (elapsed < 1000) {

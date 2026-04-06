@@ -4,6 +4,7 @@ contextBridge.exposeInMainWorld('electron', {
     close: (windowType: 'drop' | 'settings') => ipcRenderer.send('close-window', windowType),
     minimize: (windowType: 'drop' | 'settings') => ipcRenderer.send('minimize-window', windowType),
     settings: () => ipcRenderer.send('settings'),
+    preview: () => ipcRenderer.send('preview'),
     browse: async () => {
         const files = await ipcRenderer.invoke('browse');
         return files;
@@ -29,7 +30,21 @@ contextBridge.exposeInMainWorld('electron', {
 
     getVersion: () => ipcRenderer.invoke('get-version'),
     isMac: () => ipcRenderer.invoke('is-mac'),
-    
+
+    setFiles: (files) => ipcRenderer.send('files:set', files),
+    getFiles: () => ipcRenderer.invoke('files:get'),
+
+
+    on: (channel, callback) => {
+        const listener = (_event, ...args) => callback(...args);
+        ipcRenderer.on(channel, listener);
+
+        return () => {
+            ipcRenderer.removeListener(channel, listener);
+        };
+    },
+
+
     showFilePath(file) {
         if (file === null) {
             return null;

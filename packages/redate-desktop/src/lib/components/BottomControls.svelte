@@ -12,11 +12,9 @@
         }
     }
 
-    function startProcessing() {
+    async function startProcessing() {
         changeStatus(APP_STATES.PROCESSING);
-        const filesToProcess = $state.snapshot(appState.files);
-        console.log("Starting processing for files:", filesToProcess);
-        window.electron.startProcessing(filesToProcess);
+        window.electron.startProcessing();
     }
 
     function changeStatus(newStatus) {
@@ -38,7 +36,6 @@
             title="Go back"
             onclick={() => {
                 changeStatus(APP_STATES.INITIAL);
-                appState.files = [];
             }}
         >
             <img src={back} alt="Go back" />
@@ -51,7 +48,7 @@
             onclick={async () => {
                 const files = await window.electron.browse();
                 if (files && files.length > 0) {
-                    appState.files = files;
+                    window.electron.setFiles(files);
                     changeStatus(APP_STATES.FILES_READY);
                 }
             }}
