@@ -64,10 +64,9 @@ export function createPreviewWindow() {
         height: 400,
         autoHideMenuBar: true,
         titleBarStyle: "hidden",
-        transparent: true,
-        frame: false,
-        title: "ReDate Preview",
+        title: "Preview selected files",
         icon: path.join(dirName(), '/icon.png'),
+        vibrancy: "under-window",
         webPreferences: {
             preload: path.join(dirName() + "/preload.cjs")
         },
@@ -115,15 +114,25 @@ app.whenReady().then(() => {
     })
 
     protocol.handle("thum", async (request) => {
-        let url = request.url.slice("thum:///".length);
-        const image = await nativeImage.createThumbnailFromPath(url, {
-            width: 200,
-            height: 200,
-        });
-        const png = image.toPNG();
-        return new Response(new Uint8Array(png), {
-            headers: { "content-type": "image/png" },
-        });
+        try {
+            const u = new URL(request.url);
+            const filePath = decodeURIComponent(u.pathname).replace(/^\/+/, "/");
+
+            const image = await nativeImage.createThumbnailFromPath(filePath, {
+                width: 200,
+                height: 200,
+            });
+
+            if (image.isEmpty()) {
+                return new Response("Thumbnail failed", { status: 404 });
+            }
+
+            return new Response(new Uint8Array(image.toPNG()), {
+                headers: { "content-type": "image/png" },
+            });
+        } catch (err) {
+            return new Response("Bad thumbnail request", { status: 400 });
+        }
     });
 
 })

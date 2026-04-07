@@ -85,6 +85,14 @@
                 });
             }
         });
+
+        window.electron.on("files:updated", (fileCache) => {
+            if (fileCache.length === 0) {
+                document.startViewTransition(() => {
+                    appState.status = APP_STATES.INITIAL;
+                });
+            }
+        });
     });
 </script>
 

@@ -1,12 +1,6 @@
 <script>
-    import onefile from "$lib/assets/onefile.png";
-    import twofiles from "$lib/assets/twofiles.png";
-    import manyfiles from "$lib/assets/manyfiles.png";
-    import foldersandfiles from "$lib/assets/foldersandfiles.png";
-    import manyfolders from "$lib/assets/manyfolders.png";
     import folder from "$lib/assets/folder.png";
-
-    import { appState } from "$lib/state.svelte";
+    import placeholder from "$lib/assets/placeholder.png";
     import { onMount } from "svelte";
 
     let files = $state([]);
@@ -38,7 +32,9 @@
 <div class="info">
     <div class="preview-stack">
         {#each previewFiles as file, i}
-            {#if isFile(file)}
+            {#if file == null}
+                <img src={placeholder} alt="" />
+            {:else if isFile(file)}
                 <img src={"thum:///" + file} alt="" class={"thumb thumb-" + i} />
             {:else}
                 <img src={folder} alt="" />

@@ -19,9 +19,16 @@
     function getFileNameFromPath(path) {
         return path.split(/[/\\]/).pop();
     }
+
+    function removeFileFromCache(filename) {
+        window.electron.getFiles().then((files) => {
+            const updatedFiles = files.filter((file) => file !== filename);
+            window.electron.setFiles(updatedFiles);
+        });
+    }
 </script>
 
-<div class="preview">
+<div class="preview" class:mac={isMac}>
     <div class="handle"></div>
     <div class="files">
         {#if files && files.length > 0}
@@ -29,7 +36,7 @@
                 <div class="file">
                     <div class="icon">
                         <img src="thum:///{file}" alt="" />
-                        <div class="remove" title="Remove from list">
+                        <div class="remove" title="Remove from list" onclick={() => removeFileFromCache(file)}>
                             <img src={close} alt="Remove from list" />
                         </div>
                     </div>
@@ -56,14 +63,16 @@
 
     .preview {
         display: flex;
-        background-color: $layer-0;
+        background-color: transparent;
         flex-direction: column;
-        border-radius: 10px;
         height: 100%;
         overflow: hidden;
-        border: 2px solid $layer-1;
         box-sizing: border-box;
         padding: 0 5px 5px 5px;
+
+        &.mac {
+            padding-top: 20px;
+        }
     }
     .handle {
         width: 100%;
@@ -118,26 +127,28 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            width: 20%;
-            flex-grow: 1;
-            max-width: 24%;
+            width: 100px;
+            min-width: 100px;
             position: relative;
-            gap: 5px;
 
             .icon {
-                width: 100%;
+                width: 100px;
                 min-width: 60px;
-                height: 80px;
+                height: 100px;
                 position: relative;
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                padding: 10px;
+                border-radius: 5px;
+                box-sizing: border-box;
 
                 img {
                     width: auto;
+                    height: auto;
                     max-width: 100%;
-                    height: 100%;
-                    object-fit: cover;
+                    max-height: 100%;
+                    object-fit: contain;
                     border-radius: 4px;
                 }
 
@@ -159,7 +170,7 @@
                     overflow: hidden;
                     opacity: 0;
                     pointer-events: none;
-                    transition: opacity 0.2s ease;
+                    transition: opacity 0.2s ease, background-color 0.2s ease;
                     cursor: pointer;
 
                     img {
@@ -167,9 +178,14 @@
                         height: 100%;
                         filter: brightness(2);
                     }
+
+                    &:hover{
+                        background-color: rgba(31, 31, 31, 0.275);
+                    }
                 }
 
                 &:hover {
+                    background-color: $layer-2;
                     .remove {
                         opacity: 1;
                         pointer-events: all;
