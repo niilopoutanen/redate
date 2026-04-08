@@ -40,3 +40,12 @@
         </select>
     </div>
 </div>
+
+
+<div class="container">
+    <div class="control">
+        <p class="label">Drop window size</p>
+        <p class="small-label">{config.gui.dropWindowSize}px</p>
+        <input type="range" min="200" step="50" max="600" bind:value={config.gui.dropWindowSize} onchange={(e) => updateConfig('gui', 'dropWindowSize', e.currentTarget.value)}/>
+    </div>
+</div>

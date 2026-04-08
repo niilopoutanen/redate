@@ -2,7 +2,7 @@ import { BrowserWindow, app, ipcMain, dialog, nativeTheme, protocol, nativeImage
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-
+import { config } from "redate-cli";
 
 
 const dev = !app.isPackaged;
@@ -25,13 +25,18 @@ export function createDropWindow() {
         return;
     }
 
+    const size = Number(config.get("gui.dropWindowSize"));
+    const base = Number.isFinite(size) ? size : 200;
+
+    const width = Math.round(base * 1.05);
+    const height = Math.round(base);
+
+
     dropWindow = new BrowserWindow({
-        width: 210,
-        height: 200,
-        maxWidth: 600,
-        maxHeight: 200,
-        minWidth: 210,
-        minHeight: 200,
+        width: width,
+        height: height,
+        minWidth: width,
+        minHeight: height,
         resizable: false,
         autoHideMenuBar: true,
         frame: false,
@@ -84,9 +89,9 @@ export function createPreviewWindow() {
 
 export function createSettingsWindow() {
     settingsWindow = new BrowserWindow({
-        width: 700,
-        height: 400,
-        minWidth: 400,
+        width: 900,
+        height: 450,
+        minWidth: 450,
         minHeight: 300,
         autoHideMenuBar: true,
         titleBarStyle: "hidden",

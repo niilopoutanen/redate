@@ -20,6 +20,32 @@ button {
     margin: 0 !important;
 }
 
+
+button.button{
+    background-color: $layer-1;
+    outline: none;
+    border: 1px solid $layer-2;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    align-self: start;
+
+    display: flex;
+    flex-direction: column;
+
+    transition: background-color 0.2s ease;
+    &:hover{
+        background-color: $layer-2;
+    }
+    p{
+        margin: 0;
+    }
+    &.primary{
+        background-color: $accent;
+        border: 1px solid $accent;
+    }
+}
+
 @font-face {
     font-family: "Inter";
     src: url("/fonts/Inter-Regular.ttf") format("truetype");

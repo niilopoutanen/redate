@@ -7,6 +7,7 @@ export const DEFAULT_CONFIG = {
     gui: {
         confirmProcessing: true,
         quitWhenDone: false,
+        dropWindowSize: 200
     }
 
 };

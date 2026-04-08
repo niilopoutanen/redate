@@ -4,13 +4,7 @@ import redate from "redate-cli";
 import Conf from 'conf';
 import os from 'os';
 import { DEFAULT_CONFIG } from 'redate-cli/defaults';
-
-
-const config = new Conf({
-    configName: "redate",
-    defaults: DEFAULT_CONFIG,
-    projectName: "ReDate",
-});
+import { config } from "redate-cli";
 
 let filesState = [];
 

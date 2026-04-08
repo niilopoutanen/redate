@@ -17,11 +17,13 @@ h1 {
     margin-top: 5px;
     display: flex;
     flex-direction: column;
-    min-height: 20px;
+    justify-content: center;
+
 
     .control {
         display: flex;
         align-items: center;
+        min-height: 30px;
     }
 
     .separator {
@@ -35,19 +37,29 @@ h1 {
         margin-right: auto !important;
     }
 
+    .small-label {
+        margin: 0;
+        font-size: 12px;
+        margin-right: 5px;
+        color: $text-secondary;
+    }
+
 }
 
 
 .input {
     background-color: $layer-2;
     align-self: start;
-    padding: 10px;
+    padding: 7px;
     border-radius: 10px;
     border: 1px solid $layer-3;
     outline: none;
+
     p {
         margin: 0;
     }
+
+
 }
 
 

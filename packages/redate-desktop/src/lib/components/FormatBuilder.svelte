@@ -81,7 +81,7 @@
     <div class="common">
         {#each commonFormats as format}
             <button
-                class="block input"
+                class="button"
                 title="Click to use this format"
                 onclick={() => {
                     formatInput.value = format;
@@ -111,6 +111,8 @@
             flex-direction: row;
             gap: 10px;
             flex-wrap: wrap;
+            justify-content: start;
+            
             button.block {
                 display: flex;
                 flex-direction: column;
@@ -180,6 +182,7 @@
             gap: 10px;
 
             button {
+                background-color: $layer-1;
                 cursor: pointer;
                 display: flex;
                 flex-direction: column;
