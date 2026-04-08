@@ -46,7 +46,7 @@ const fileHandlers = {
     },
 
     copy: async (src, dest) => {
-        fs.promises.copyFile(src, dest);
+        await fs.promises.copyFile(src, dest);
     },
 
     copytofolder: async (src, dest) => {
