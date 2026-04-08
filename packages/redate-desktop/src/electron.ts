@@ -67,6 +67,7 @@ export function createPreviewWindow() {
         title: "Preview selected files",
         icon: path.join(dirName(), '/icon.png'),
         vibrancy: "under-window",
+        backgroundMaterial: "mica",
         webPreferences: {
             preload: path.join(dirName() + "/preload.cjs")
         },
