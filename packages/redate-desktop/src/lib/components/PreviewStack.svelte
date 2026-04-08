@@ -32,10 +32,10 @@
 <div class="info">
     <div class="preview-stack">
         {#each previewFiles as file, i}
-            {#if file == null}
+            {#if file == null || file === ""}
                 <img src={placeholder} alt="" />
             {:else if isFile(file)}
-                <img src={"thum:///" + file} alt="" class={"thumb thumb-" + i} />
+                <img src="thum:///{file}" alt="" class={"thumb thumb-" + i} />
             {:else}
                 <img src={folder} alt="" />
             {/if}

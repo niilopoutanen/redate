@@ -116,7 +116,16 @@ app.whenReady().then(() => {
     protocol.handle("thum", async (request) => {
         try {
             const u = new URL(request.url);
-            const filePath = decodeURIComponent(u.pathname).replace(/^\/+/, "/");
+
+            let filePath = decodeURIComponent(u.pathname);
+
+            if (process.platform === "win32") {
+                if (filePath.startsWith("/")) {
+                    filePath = filePath.slice(1);
+                }
+            }
+
+            filePath = path.normalize(filePath);
 
             const image = await nativeImage.createThumbnailFromPath(filePath, {
                 width: 200,
@@ -130,6 +139,7 @@ app.whenReady().then(() => {
             return new Response(new Uint8Array(image.toPNG()), {
                 headers: { "content-type": "image/png" },
             });
+
         } catch (err) {
             return new Response("Bad thumbnail request", { status: 400 });
         }
