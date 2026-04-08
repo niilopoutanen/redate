@@ -5,6 +5,7 @@ import { execSync } from "child_process";
 import readline from "readline";
 import { DEFAULT_CONFIG } from "./defaults.js";
 import redate from "./core.js";
+import os from "os";
 import { config } from "./core.js";
 
 const program = new Command();
@@ -12,7 +13,7 @@ const program = new Command();
 program
     .name("redate")
     .description("Rename images based on EXIF dates")
-    .version("0.6.1");
+    .version("0.7.0");
 
 
 program
@@ -23,6 +24,9 @@ program
         console.log(`Total files: ${result.totalFiles}`);
         console.log(`Processed: ${result.processed}`);
         console.log(`Skipped (no date): ${result.skippedNoDate}`);
+        console.log(`Skipped (hidden files): ${result.skippedHidden}`);
+        console.log(`Skipped (unsupported file format): ${result.skippedUnsupported}`);
+
         if (result.errors.length > 0) {
             console.log("Errors:");
             result.errors.forEach((err) => console.log(`  - ${err}`));
@@ -44,11 +48,25 @@ configCommand
         console.log(config.store[key]);
     });
 
+
 configCommand
     .command("edit")
     .description("Open config file in editor")
     .action(() => {
-        const editor = process.env.EDITOR || "notepad";
+        let editor = process.env.EDITOR;
+
+        if (!editor) {
+            const platform = os.platform();
+
+            if (platform === "win32") {
+                editor = "notepad";
+            } else if (platform === "darwin") {
+                editor = "open";
+            } else {
+                editor = "nano";
+            }
+        }
+
         execSync(`${editor} "${config.path}"`, { stdio: "inherit" });
     });
 

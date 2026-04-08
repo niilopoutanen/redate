@@ -12,6 +12,14 @@ export const DEFAULT_CONFIG = {
 
 };
 
+export const SUPPORTED_FILES = new Set([
+    "jpg", "jpeg",
+    "tif", "tiff",
+    "png", "webp",
+    "heic", "heif", "avif",
+    "raf", "cr2", "nef", "arw", "dng", "orf", "rw2",
+]);
+
 export const TOKENS = {
     yyyy: { desc: "4-digit year", value: (date) => date.getFullYear() },
     yy: { desc: "2-digit year", value: (date) => String(date.getFullYear()).slice(-2) },

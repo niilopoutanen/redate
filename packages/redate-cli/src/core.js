@@ -1,9 +1,8 @@
 import fs from "fs";
 import path from "path";
 import exifr from "exifr";
-import { TOKENS } from "./defaults.js";
+import { TOKENS, DEFAULT_CONFIG, SUPPORTED_FILES } from "./defaults.js";
 import Conf from "conf";
-import { DEFAULT_CONFIG } from "./defaults.js";
 
 /**
  * @typedef {Object<string, any>} Config
@@ -14,6 +13,8 @@ import { DEFAULT_CONFIG } from "./defaults.js";
  * @property {number} totalFiles - Total number of files encountered.
  * @property {number} processed - Number of files successfully processed.
  * @property {number} skippedNoDate - Number of files skipped due to missing date.
+ * @property {number} skippedHidden - Number of hidden files (dotfiles) skipped.
+ * @property {number} skippedUnsupported - Number of files skipped due to unsupported file format.
  * @property {string[]} errors - Array of error messages.
  */
 
@@ -38,23 +39,25 @@ export const config = new Conf({
 });
 
 
-/** @type {Record<string, (src: string, dest: string) => void>} */
+/** @type {Record<string, (src: string, dest: string) => Promise<void>>} */
 const fileHandlers = {
-    rename: (src, dest) => {
-        fs.renameSync(src, dest);
+    rename: async (src, dest) => {
+        await fs.promises.rename(src, dest);
     },
 
-    copy: (src, dest) => {
-        fs.copyFileSync(src, dest);
+    copy: async (src, dest) => {
+        fs.promises.copyFile(src, dest);
     },
 
-    copytofolder: (src, dest) => {
+    copytofolder: async (src, dest) => {
         const dir = path.dirname(src);
         const targetDir = path.join(dir, "redate");
-        if (!fs.existsSync(targetDir)) {
-            fs.mkdirSync(targetDir);
-        }
-        fs.copyFileSync(src, path.join(targetDir, path.basename(dest)));
+        await fs.promises.mkdir(targetDir, { recursive: true });
+
+        await fs.promises.copyFile(
+            src,
+            path.join(targetDir, path.basename(dest))
+        );
     }
 };
 
@@ -64,23 +67,27 @@ export async function redate(paths) {
         totalFiles: 0,
         processed: 0,
         skippedNoDate: 0,
+        skippedUnsupported: 0,
+        skippedHidden: 0,
         errors: []
     };
 
-    for (const p of paths) {
-        if (!fs.existsSync(p)) {
-            result.errors.push(`Path does not exist: ${p}`);
-            continue;
+    const tasks = paths.map(async (path) => {
+        if (!fs.existsSync(path)) {
+            result.errors.push(`Path does not exist: ${path}`);
+            return;
         }
 
-        const stats = fs.statSync(p);
+        const stats = fs.statSync(path);
 
         if (stats.isFile()) {
-            await processFile(p, config.store, result);
+            await processFile(path, config.store, result);
         } else if (stats.isDirectory()) {
-            await processFiles(p, config.store, result);
+            await processFiles(path, config.store, result);
         }
-    }
+    });
+
+    await Promise.all(tasks);
 
     return result;
 }
@@ -94,12 +101,16 @@ export async function redate(paths) {
 export async function processFiles(folderPath, config, result) {
     const files = fs.readdirSync(folderPath);
 
-    for (const file of files) {
+    const tasks = files.map(async (file) => {
         const filePath = path.join(folderPath, file);
-        if (!fs.statSync(filePath).isFile()) continue;
+        const stat = await fs.promises.stat(filePath);
+
+        if (!stat.isFile()) return;
 
         await processFile(filePath, config, result);
-    }
+    });
+
+    await Promise.all(tasks);
 }
 
 /**
@@ -112,6 +123,17 @@ export async function processFile(filePath, config, result) {
     result.totalFiles += 1;
 
     try {
+        if (path.basename(filePath).startsWith(".")) {
+            result.skippedHidden += 1;
+            return;
+        }
+
+        const ext = path.extname(filePath).slice(1).toLowerCase();
+        if (!SUPPORTED_FILES.has(ext)) {
+            result.skippedUnsupported += 1;
+            return;
+        }
+
         const date = await getDateFromFile(filePath);
         if (!date) {
             result.skippedNoDate += 1;
@@ -121,7 +143,7 @@ export async function processFile(filePath, config, result) {
         const originalName = path.basename(filePath);
         const newFileName = formatFileName(date, originalName, config);
 
-        applyFileHandling(filePath, newFileName, config);
+        await applyFileHandling(filePath, newFileName, config);
 
         result.processed += 1;
     } catch (err) {
@@ -135,7 +157,7 @@ export async function processFile(filePath, config, result) {
  * @param {string} newFileName - New file name.
  * @param {Config} config - Configuration object.
  */
-function applyFileHandling(srcPath, newFileName, config) {
+async function applyFileHandling(srcPath, newFileName, config) {
     const dir = path.dirname(srcPath);
     const dest = path.join(dir, newFileName);
 
@@ -145,7 +167,7 @@ function applyFileHandling(srcPath, newFileName, config) {
         throw new Error(`Unknown fileHandling: ${config.cli.fileHandling}`);
     }
 
-    handler(srcPath, dest);
+    await handler(srcPath, dest);
 }
 
 /**
