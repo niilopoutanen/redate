@@ -13,7 +13,7 @@ const program = new Command();
 program
     .name("redate")
     .description("Rename images based on EXIF dates")
-    .version("0.7.0");
+    .version("0.7.1");
 
 
 program
@@ -26,6 +26,7 @@ program
         console.log(`Skipped (no date): ${result.skippedNoDate}`);
         console.log(`Skipped (hidden files): ${result.skippedHidden}`);
         console.log(`Skipped (unsupported file format): ${result.skippedUnsupported}`);
+        console.log(`Skipped (duplicate handling): ${result.skippedDuplicates}`);
 
         if (result.errors.length > 0) {
             console.log("Errors:");
@@ -37,16 +38,16 @@ const configCommand = program
     .command("config")
     .description("Manage configuration");
 
-configCommand
-    .command("get [key]")
-    .action((key) => {
-        if (!key) {
-            console.log(config.store);
-            return;
-        }
+    configCommand
+        .command("get [key]")
+        .action((key) => {
+            if (!key) {
+                console.log(structuredClone(config.store));
+                return;
+            }
 
-        console.log(config.store[key]);
-    });
+            console.log(config.store[key]);
+        });
 
 
 configCommand

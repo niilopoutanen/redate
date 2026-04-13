@@ -15,6 +15,7 @@ import Conf from "conf";
  * @property {number} skippedNoDate - Number of files skipped due to missing date.
  * @property {number} skippedHidden - Number of hidden files (dotfiles) skipped.
  * @property {number} skippedUnsupported - Number of files skipped due to unsupported file format.
+ * @property {number} skippedDuplicates - Number of files skipped due to duplicate handling.
  * @property {string[]} errors - Array of error messages.
  */
 
@@ -69,6 +70,7 @@ export async function redate(paths) {
         skippedNoDate: 0,
         skippedUnsupported: 0,
         skippedHidden: 0,
+        skippedDuplicates: 0,
         errors: []
     };
 
@@ -143,7 +145,7 @@ export async function processFile(filePath, config, result) {
         const originalName = path.basename(filePath);
         const newFileName = formatFileName(date, originalName, config);
 
-        await applyFileHandling(filePath, newFileName, config);
+        await applyFileHandling(filePath, newFileName, config, result);
 
         result.processed += 1;
     } catch (err) {
@@ -156,10 +158,17 @@ export async function processFile(filePath, config, result) {
  * @param {string} srcPath - Source file path.
  * @param {string} newFileName - New file name.
  * @param {Config} config - Configuration object.
+ * @param {Result} result - Result object to update.
  */
-async function applyFileHandling(srcPath, newFileName, config) {
+async function applyFileHandling(srcPath, newFileName, config, result) {
     const dir = path.dirname(srcPath);
-    const dest = path.join(dir, newFileName);
+    let dest = path.join(dir, newFileName);
+
+    dest = await resolveDuplicate(dest, config.cli.duplicateAction);
+    if (!dest) {
+        result.skippedDuplicates += 1;
+        return;
+    };
 
     const handler = fileHandlers[config.cli.fileHandling];
 
@@ -170,6 +179,36 @@ async function applyFileHandling(srcPath, newFileName, config) {
     await handler(srcPath, dest);
 }
 
+async function resolveDuplicate(dest, action) {
+    if (!fs.existsSync(dest)) return dest;
+
+    const dir = path.dirname(dest);
+    const ext = path.extname(dest);
+    const name = path.basename(dest, ext);
+
+    switch (action) {
+        case "overwrite":
+            return dest;
+
+        case "skip":
+            return null;
+
+        case "addindex": {
+            let i = 1;
+            let newDest;
+
+            do {
+                newDest = path.join(dir, `${name} (${i})${ext}`);
+                i++;
+            } while (fs.existsSync(newDest));
+
+            return newDest;
+        }
+
+        default:
+            throw new Error(`Unknown duplicateAction: ${action}`);
+    }
+}
 /**
  * Format a filename according to the config format and tokens.
  * @param {Date} date - Date to use for formatting.
