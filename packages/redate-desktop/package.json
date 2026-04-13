@@ -1,6 +1,6 @@
 {
   "name": "redate",
-  "version": "0.2.0",
+  "version": "0.1.9",
   "author": "Niilo Poutanen",
   "description": "App for renaming files by exif data",
   "private": true,
@@ -14,6 +14,7 @@
   "build": {
     "appId": "dev.poutanen.redate",
     "productName": "ReDate",
+    "artifactName": "${productName}-Setup-${version}.${ext}",
     "files": [
       "build/**/*",
       "package.json"
@@ -27,7 +28,17 @@
       "target": "nsis",
       "icon": "static/favicon.ico"
     },
-    "extraFiles": []
+    "nsis": {
+      "differentialPackage": false
+    },
+    "extraFiles": [],
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "niilopoutanen",
+        "repo": "redate"
+      }
+    ]
   },
   "devDependencies": {
     "@electron/packager": "^18.3.4",
@@ -50,7 +61,8 @@
     "conf": "^15.1.0",
     "electron-store": "^11.0.2",
     "ogl": "^1.0.11",
-    "redate-cli": "*"
+    "redate-cli": "*",
+    "electron-updater": "^6.8.3"
   },
   "optionalDependencies": {
     "@rollup/rollup-darwin-arm64": "^4.60.1",

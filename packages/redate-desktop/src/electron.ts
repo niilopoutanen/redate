@@ -1,10 +1,11 @@
 import { BrowserWindow, app, ipcMain, dialog, nativeTheme, protocol, nativeImage } from 'electron';
+import pkg from 'electron-updater';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { config } from "redate-cli";
 
-
+const { autoUpdater } = pkg;
 const dev = !app.isPackaged;
 export let dropWindow: BrowserWindow;
 export let settingsWindow: BrowserWindow;
@@ -118,6 +119,8 @@ app.whenReady().then(() => {
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) createDropWindow()
     })
+
+    autoUpdater.checkForUpdatesAndNotify();
 
     protocol.handle("thum", async (request) => {
         try {
