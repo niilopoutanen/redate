@@ -145,7 +145,7 @@
         color: #818181;
         font-family: "Inter", sans-serif;
         background-color: $layer-0;
-        border-radius: 15px;
+        border-radius: 20px;
         border: 2px solid $layer-2;
         animation: app-load 400ms ease forwards;
         overflow: hidden;

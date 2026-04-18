@@ -14,12 +14,11 @@
     let { children } = $props();
     let version = $state("");
 
-
     let isMac = $state(false);
 
     onMount(async () => {
         if (typeof window === "undefined") return;
-        version = "v " + await window.electron.getVersion();;
+        version = "v " + (await window.electron.getVersion());
 
         isMac = await window.electron.isMac();
     });
@@ -31,11 +30,19 @@
             <img class="icon" src={resolve("/icon.png")} alt="ReDate" />
             <h1>ReDate</h1>
         </div>
-        <a class="item" href={resolve("/settings")} class:active={$page.url.pathname == "/settings/"}>
+        <a
+            class="item"
+            href={resolve("/settings")}
+            class:active={$page.url.pathname == "/settings/"}
+        >
             <img class="icon" src={gear} alt="General settings" />
             <p>General</p>
         </a>
-        <a class="item" href={resolve("/settings/files")} class:active={$page.url.pathname == "/settings/files/"}>
+        <a
+            class="item"
+            href={resolve("/settings/files")}
+            class:active={$page.url.pathname == "/settings/files/"}
+        >
             <img class="icon" src={drive} alt="File handling settings" />
             <p>Rename format</p>
         </a>
@@ -45,8 +52,14 @@
         <header>
             {#if !isMac}
                 <div class="controls-windows">
-                    <button onclick={() => window.electron.minimize("settings")}> <img src={dash} alt="Minimize" /> </button>
-                    <button onclick={() => window.electron.close("settings")}> <img src={close} alt="Close" /> </button>
+                    <button
+                        onclick={() => window.electron.minimize("settings")}
+                    >
+                        <img src={dash} alt="Minimize" />
+                    </button>
+                    <button onclick={() => window.electron.close("settings")}>
+                        <img src={close} alt="Close" />
+                    </button>
                 </div>
             {/if}
         </header>
@@ -67,10 +80,9 @@
         flex-grow: 1;
         font-family: "Inter", sans-serif;
         overflow: hidden;
-        background-color: $layer-0;
+
         .sidebar {
             min-width: 200px;
-            background-color: $layer-1;
             padding: 10px;
             border-right: 1px solid $layer-2;
             display: flex;
@@ -79,7 +91,7 @@
             box-sizing: border-box;
             transition: min-width 0.2s ease;
 
-            &.mac{
+            &.mac {
                 padding-top: 30px;
             }
             .drag {
@@ -122,8 +134,8 @@
                 }
 
                 &.active {
-                    background-color: $layer-2;
-                    border: 1px solid $layer-3;
+                    background-color: #2c2c2c93;
+                    border: 1px solid #3f3f3f93;
                     box-sizing: border-box;
                 }
             }
@@ -160,6 +172,8 @@
             height: 100%;
             position: relative;
             overflow-y: scroll;
+            background-color: #222222b7;
+
             header {
                 position: fixed;
                 left: 0;

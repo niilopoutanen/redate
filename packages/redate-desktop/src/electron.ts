@@ -97,6 +97,7 @@ export function createSettingsWindow() {
         autoHideMenuBar: true,
         titleBarStyle: "hidden",
         title: "ReDate Settings",
+        vibrancy: "under-window",
         icon: path.join(dirName(), '/icon.png'),
         webPreferences: {
             preload: path.join(dirName() + "/preload.cjs")
